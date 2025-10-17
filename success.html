@@ -1,0 +1,585 @@
+<!-- success.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Success</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #e4f7c9;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    
+
+    h1 {
+      font-size: 28px;
+      font-weight: bold;
+      color: #000;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .track-btn {
+      background: #8BC34A;
+      color: #fff;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 18px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="checkmark-circle">
+    <img src="images/Group 51.png">
+  </div>
+  <h1>“We’ve Got Your Order!”</h1>
+  <button class="track-btn" id="track-order-btn">Track Your order Now</button>
+
+  <script>
+window.addEventListener("DOMContentLoaded", () => {
+  const productStr = localStorage.getItem("securedCheckoutProduct");
+  if (!productStr) return;
+
+  let products = JSON.parse(productStr);
+  if (!Array.isArray(products)) {
+    products = [products];
+  }
+
+  const orderSummary = products.map(p => ({
+    ...p,
+    orderDate: new Date().toLocaleDateString(),
+  }));
+
+  localStorage.setItem("orderSummary", JSON.stringify(orderSummary));
+});
+
+const btn = document.getElementById("track-order-btn");
+if (btn) {
+  document.getElementById("track-order-btn").addEventListener("click", () => {
+      window.location.href = "order-success.html";
+  });
+}
+</script>
+<!-- Leaflet Map (for location picker) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// --------------------
+// USER AUTH + PROFILE
+// --------------------
+function getUsers() {
+  return JSON.parse(localStorage.getItem("gh_users") || "{}");
+}
+
+function saveUsers(users) {
+  localStorage.setItem("gh_users", JSON.stringify(users));
+}
+
+function getCurrentUser() {
+  const email = localStorage.getItem("gh_current_user");
+  if (!email) return null;
+  const users = getUsers();
+  return users[email] || null;
+}
+
+function setCurrentUser(email) {
+  if (email) localStorage.setItem("gh_current_user", email);
+  else localStorage.removeItem("gh_current_user");
+}
+
+// --------------------
+// SIGN UP
+// --------------------
+function handleSignup() {
+  const name = document.getElementById("signupName").value.trim();
+  const email = document.getElementById("signupEmail").value.trim().toLowerCase();
+  const phone = document.getElementById("signupPhone").value.trim();
+  const password = document.getElementById("signupPassword").value.trim();
+
+  if (!name || !email || !password) {
+    alert("Please fill all required fields (Name, Email, Password).");
+    return;
+  }
+
+  const users = getUsers();
+  if (users[email]) {
+    alert("User already exists. Please login instead.");
+    closeModal('signupModal');
+    openModal('loginModal');
+    return;
+  }
+
+  users[email] = { name, email, phone, password, location: "Set your location" };
+  saveUsers(users);
+  setCurrentUser(email);
+
+  alert(`Welcome, ${name}! 🎉`);
+  closeModal('signupModal');
+  updateNavbar();
+}
+
+// --------------------
+// LOGIN
+// --------------------
+function handleLogin() {
+  const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+  const password = document.getElementById("loginPassword").value.trim();
+
+  const users = getUsers();
+  const user = users[email];
+
+  if (!user || user.password !== password) {
+    alert("Invalid email or password.");
+    return;
+  }
+
+  setCurrentUser(email);
+  alert(`Welcome back, ${user.name}! 🌿`);
+  closeModal('loginModal');
+  updateNavbar();
+}
+
+// --------------------
+// LOGOUT
+// --------------------
+function handleLogout() {
+  setCurrentUser(null);
+  updateNavbar();
+  alert("You have been logged out.");
+}
+
+// --------------------
+// NAVBAR UPDATE
+// --------------------
+function updateNavbar() {
+  const user = getCurrentUser();
+  const accountBtn = document.querySelector('[onclick*="accountModal"]');
+  const loginBtn = document.querySelector('.login-icon .text');
+  const welcomeMsg = document.getElementById('welcome-msg');
+  const locSpan = document.getElementById('current-location-text');
+
+  if (user) {
+    loginBtn.textContent = "Logout";
+    loginBtn.parentElement.onclick = handleLogout;
+    if (welcomeMsg) welcomeMsg.textContent = `Welcome, ${user.name}`;
+    if (locSpan) locSpan.textContent = user.location || "Set your location";
+  } else {
+    loginBtn.textContent = "Login / Signup";
+    loginBtn.parentElement.onclick = () => openModal('loginModal');
+    if (welcomeMsg) welcomeMsg.textContent = "";
+    if (locSpan) locSpan.textContent = "Set your location";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", updateNavbar);
+
+// --------------------
+// ACCOUNT MODAL FILL
+// --------------------
+function openAccountModal() {
+  const user = getCurrentUser();
+  openModal('accountModal');
+
+  const modal = document.querySelector('#accountModal .modal');
+  if (!user) {
+    modal.innerHTML = `
+      <span class="close-btn" onclick="closeModal('accountModal')">&times;</span>
+      <h2>Not logged in</h2>
+      <button onclick="openModal('loginModal'); closeModal('accountModal')">Login</button>`;
+    return;
+  }
+
+  modal.innerHTML = `
+    <span class="close-btn" onclick="closeModal('accountModal')">&times;</span>
+    <h2>Welcome, ${user.name}</h2>
+    <p><strong>Email:</strong> ${user.email}</p>
+    <p><strong>Phone:</strong> ${user.phone || '-'}</p>
+    <p><strong>Location:</strong> ${user.location || 'Not set'}</p>
+    <hr>
+    <ul>
+      <li><a href="account.html">Your Account</a></li>
+      <li><a href="orders.html">Your Orders</a></li>
+      <li><a href="wishlist.html">Your Wishlist</a></li>
+      <li><a href="saveitems.html">Subscribe & Save</a></li>
+    </ul>
+    <button onclick="handleLogout()">Logout</button>`;
+}
+
+// --------------------
+// LOCATION PICKER MAP
+// --------------------
+function openLocationMap() {
+  openModal('locationModal');
+
+  // Replace modal content with map
+  const modal = document.querySelector('#locationModal .modal');
+  modal.innerHTML = `
+    <span class="close-btn" onclick="closeModal('locationModal')">&times;</span>
+    <h2>Select Your Delivery Location</h2>
+    <div id="map" style="height:350px;border-radius:10px;"></div>
+    <p id="pickedAddress" style="margin-top:10px;font-weight:600;color:#4a7d20;"></p>
+    <button style="margin-top:10px;" onclick="closeModal('locationModal')">Done</button>
+  `;
+
+  const map = L.map('map').setView([13.0827, 80.2707], 12); // Default: Chennai
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+
+  let marker;
+  map.on('click', async (e) => {
+    const { lat, lng } = e.latlng;
+    if (marker) marker.remove();
+    marker = L.marker([lat, lng]).addTo(map);
+
+    // Reverse geocode
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+    const data = await response.json();
+    const address = data.display_name || `Lat: ${lat.toFixed(4)}, Lon: ${lng.toFixed(4)}`;
+
+    document.getElementById('pickedAddress').textContent = address;
+
+    // Save location
+    const user = getCurrentUser();
+    if (user) {
+      const users = getUsers();
+      users[user.email].location = address;
+      saveUsers(users);
+      updateNavbar();
+    }
+  });
+}
+</script>
+<!-- Leaflet (Online Map for Location) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// ---------- Modal Utilities ----------
+function openModal(id){ document.getElementById(id).style.display="flex"; }
+function closeModal(id){ document.getElementById(id).style.display="none"; }
+function toggleModals(from,to){ closeModal(from); openModal(to); }
+
+// ---------- Storage Helpers ----------
+function getUsers(){ return JSON.parse(localStorage.getItem("gh_users")||"{}"); }
+function saveUsers(u){ localStorage.setItem("gh_users",JSON.stringify(u)); }
+function getCurrentUserEmail(){ return localStorage.getItem("gh_current_user"); }
+function setCurrentUserEmail(e){ e?localStorage.setItem("gh_current_user",e):localStorage.removeItem("gh_current_user"); }
+function getCurrentUser(){ const e=getCurrentUserEmail(); return e?getUsers()[e]||null:null; }
+
+// ---------- Navbar Update ----------
+function updateNavbar(){
+  const user=getCurrentUser();
+  const welcome=document.getElementById("welcome-msg");
+  const loc=document.getElementById("current-location-text");
+  const loginBtn=document.querySelector(".login-icon .text");
+  if(user){
+    if(welcome)welcome.textContent=`Welcome, ${user.name} 🌿`;
+    if(loc)loc.textContent=user.location||"Set your location";
+    if(loginBtn)loginBtn.textContent="Logout";
+    document.querySelector(".login-icon").onclick=handleLogout;
+  }else{
+    if(welcome)welcome.textContent="";
+    if(loc)loc.textContent="Set your location";
+    if(loginBtn)loginBtn.textContent="Login / Signup";
+    document.querySelector(".login-icon").onclick=()=>openModal('loginModal');
+  }
+}
+
+// ---------- Signup ----------
+function handleSignup(){
+  const name=signupName.value.trim();
+  const email=signupEmail.value.trim().toLowerCase();
+  const phone=signupPhone.value.trim();
+  const password=signupPassword.value.trim();
+  if(!name||!email||!password){alert("Please fill all required fields.");return;}
+  const users=getUsers();
+  if(users[email]){alert("User already exists. Please login.");toggleModals('signupModal','loginModal');return;}
+  users[email]={name,email,phone,password,location:"Set your location"};
+  saveUsers(users);
+  setCurrentUserEmail(email);
+  closeModal('signupModal');
+  alert(`Welcome, ${name}! 🎉`);
+  updateNavbar();
+}
+
+// ---------- Login ----------
+function handleLogin(){
+  const email=loginEmail.value.trim().toLowerCase();
+  const pass=loginPassword.value.trim();
+  const users=getUsers(); const user=users[email];
+  if(!user||user.password!==pass){alert("Invalid email or password.");return;}
+  setCurrentUserEmail(email);
+  closeModal('loginModal');
+  alert(`Welcome back, ${user.name}!`);
+  updateNavbar();
+  updateAccountModal();
+}
+
+// ---------- Logout ----------
+function handleLogout(){
+  setCurrentUserEmail(null);
+  updateNavbar();
+  updateAccountModal();
+  alert("You have been logged out.");
+}
+
+// ---------- Account Modal ----------
+function updateAccountModal(){
+  const user=getCurrentUser();
+  const container=document.getElementById("accountContent");
+  if(!user){
+    container.innerHTML=`
+      <h2>Your Account</h2>
+      <p>You are not logged in.</p>
+      <button class='continue-btn' onclick='openModal("loginModal")'>Login</button>`;
+    return;
+  }
+  container.innerHTML=`
+    <h2>Welcome, ${user.name}</h2>
+    <p><strong>Email:</strong> ${user.email}</p>
+    <p><strong>Phone:</strong> ${user.phone||'-'}</p>
+    <p><strong>Location:</strong> ${user.location||'Not set'}</p>
+    <hr>
+    <ul>
+      <li><a href='account.html'>Your Account</a></li>
+      <li><a href='orders.html'>Your Orders</a></li>
+      <li><a href='wishlist.html'>Your Wishlist</a></li>
+      <li><a href='saveitems.html'>Subscribe & Save</a></li>
+    </ul>
+    <button class='continue-btn' onclick='openLocationMap()'>Change Location</button>
+    <button class='continue-btn' onclick='handleLogout()'>Logout</button>`;
+}
+
+// ---------- Location Picker (Leaflet) ----------
+function openLocationMap(){
+  openModal('locationModal');
+  const mapDiv=document.getElementById('map');
+  mapDiv.innerHTML="";
+  const map=L.map('map').setView([13.0827,80.2707],12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    maxZoom:19, attribution:'&copy; OpenStreetMap'
+  }).addTo(map);
+  let marker;
+  map.on('click',async e=>{
+    const{lat,lng}=e.latlng;
+    if(marker)marker.remove();
+    marker=L.marker([lat,lng]).addTo(map);
+    const res=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+    const data=await res.json();
+    const address=data.display_name||`Lat:${lat.toFixed(4)},Lon:${lng.toFixed(4)}`;
+    document.getElementById('pickedAddress').textContent=address;
+    const user=getCurrentUser(); if(user){
+      const users=getUsers(); users[user.email].location=address; saveUsers(users);
+      updateNavbar(); updateAccountModal();
+    }
+  });
+}
+
+// ---------- Init ----------
+document.addEventListener("DOMContentLoaded",()=>{ updateNavbar(); updateAccountModal(); });
+</script>
+<script>
+// --------------------
+// USER AUTH + PROFILE
+// --------------------
+function getUsers() {
+  return JSON.parse(localStorage.getItem("gh_users") || "{}");
+}
+
+function saveUsers(users) {
+  localStorage.setItem("gh_users", JSON.stringify(users));
+}
+
+function getCurrentUser() {
+  const email = localStorage.getItem("gh_current_user");
+  if (!email) return null;
+  const users = getUsers();
+  return users[email] || null;
+}
+
+function setCurrentUser(email) {
+  if (email) localStorage.setItem("gh_current_user", email);
+  else localStorage.removeItem("gh_current_user");
+}
+
+// --------------------
+// SIGN UP
+// --------------------
+function handleSignup() {
+  const name = document.getElementById("signupName").value.trim();
+  const email = document.getElementById("signupEmail").value.trim().toLowerCase();
+  const phone = document.getElementById("signupPhone").value.trim();
+  const password = document.getElementById("signupPassword").value.trim();
+
+  if (!name || !email || !password) {
+    alert("Please fill all required fields (Name, Email, Password).");
+    return;
+  }
+
+  const users = getUsers();
+  if (users[email]) {
+    alert("User already exists. Please login instead.");
+    closeModal('signupModal');
+    openModal('loginModal');
+    return;
+  }
+
+  users[email] = { name, email, phone, password, location: "Set your location" };
+  saveUsers(users);
+  setCurrentUser(email);
+
+  alert(`Welcome, ${name}! 🎉`);
+  closeModal('signupModal');
+  updateNavbar();
+}
+
+// --------------------
+// LOGIN
+// --------------------
+function handleLogin() {
+  const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+  const password = document.getElementById("loginPassword").value.trim();
+
+  const users = getUsers();
+  const user = users[email];
+
+  if (!user || user.password !== password) {
+    alert("Invalid email or password.");
+    return;
+  }
+
+  setCurrentUser(email);
+  alert(`Welcome back, ${user.name}! 🌿`);
+  closeModal('loginModal');
+  updateNavbar();
+}
+
+// --------------------
+// LOGOUT
+// --------------------
+function handleLogout() {
+  setCurrentUser(null);
+  updateNavbar();
+  alert("You have been logged out.");
+}
+
+// --------------------
+// NAVBAR UPDATE
+// --------------------
+function updateNavbar() {
+  const user = getCurrentUser();
+  const accountBtn = document.querySelector('[onclick*="accountModal"]');
+  const loginBtn = document.querySelector('.login-icon .text');
+  const welcomeMsg = document.getElementById('welcome-msg');
+  const locSpan = document.getElementById('current-location-text');
+
+  if (user) {
+    loginBtn.textContent = "Logout";
+    loginBtn.parentElement.onclick = handleLogout;
+    if (welcomeMsg) welcomeMsg.textContent = `Welcome, ${user.name}`;
+    if (locSpan) locSpan.textContent = user.location || "Set your location";
+  } else {
+    loginBtn.textContent = "Login / Signup";
+    loginBtn.parentElement.onclick = () => openModal('loginModal');
+    if (welcomeMsg) welcomeMsg.textContent = "";
+    if (locSpan) locSpan.textContent = "Set your location";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", updateNavbar);
+
+// --------------------
+// ACCOUNT MODAL FILL
+// --------------------
+function openAccountModal() {
+  const user = getCurrentUser();
+  openModal('accountModal');
+
+  const modal = document.querySelector('#accountModal .modal');
+  if (!user) {
+    modal.innerHTML = `
+      <span class="close-btn" onclick="closeModal('accountModal')">&times;</span>
+      <h2>Not logged in</h2>
+      <button onclick="openModal('loginModal'); closeModal('accountModal')">Login</button>`;
+    return;
+  }
+
+  modal.innerHTML = `
+    <span class="close-btn" onclick="closeModal('accountModal')">&times;</span>
+    <h2>Welcome, ${user.name}</h2>
+    <p><strong>Email:</strong> ${user.email}</p>
+    <p><strong>Phone:</strong> ${user.phone || '-'}</p>
+    <p><strong>Location:</strong> ${user.location || 'Not set'}</p>
+    <hr>
+    <ul>
+      <li><a href="account.html">Your Account</a></li>
+      <li><a href="orders.html">Your Orders</a></li>
+      <li><a href="wishlist.html">Your Wishlist</a></li>
+      <li><a href="saveitems.html">Subscribe & Save</a></li>
+    </ul>
+    <button onclick="handleLogout()">Logout</button>`;
+}
+
+// --------------------
+// LOCATION PICKER MAP
+// --------------------
+function openLocationMap() {
+  openModal('locationModal');
+
+  // Replace modal content with map
+  const modal = document.querySelector('#locationModal .modal');
+  modal.innerHTML = `
+    <span class="close-btn" onclick="closeModal('locationModal')">&times;</span>
+    <h2>Select Your Delivery Location</h2>
+    <div id="map" style="height:350px;border-radius:10px;"></div>
+    <p id="pickedAddress" style="margin-top:10px;font-weight:600;color:#4a7d20;"></p>
+    <button style="margin-top:10px;" onclick="closeModal('locationModal')">Done</button>
+  `;
+
+  const map = L.map('map').setView([13.0827, 80.2707], 12); // Default: Chennai
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+
+  let marker;
+  map.on('click', async (e) => {
+    const { lat, lng } = e.latlng;
+    if (marker) marker.remove();
+    marker = L.marker([lat, lng]).addTo(map);
+
+    // Reverse geocode
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+    const data = await response.json();
+    const address = data.display_name || `Lat: ${lat.toFixed(4)}, Lon: ${lng.toFixed(4)}`;
+
+    document.getElementById('pickedAddress').textContent = address;
+
+    // Save location
+    const user = getCurrentUser();
+    if (user) {
+      const users = getUsers();
+      users[user.email].location = address;
+      saveUsers(users);
+      updateNavbar();
+    }
+  });
+}
+</script>
+</body>
+</html>

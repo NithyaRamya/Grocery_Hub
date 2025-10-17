@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Details</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<style>
+  #back-button {
+    background-color: #8BC34A;
+    color: white;
+    border: none;
+    /* padding: 8px 15px;*/
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    /*margin-bottom: 20px;*/
+    display: inline;
+  }
+
+
+  #back-button:hover {
+    background-color: #7CA635;
+  }
+</style>
+
+<body>
+
+  <div class="container">
+
+    <button id="back-button">← Back to Home</button>
+
+
+    <div class="product-info" id="product-info">
+      <!-- Product info loaded dynamically here -->
+    </div>
+
+    <div class="product-image-section" id="product-image-section">
+      <!-- Product image and purchase info loaded dynamically here -->
+    </div>
+  </div>
+
+
+
+  <script>
+    // Product data as JS objects
+    const products = {
+      premiumChicken: {
+        title: "Premium Chicken Whole Skinless",
+        description:
+          "Indulge in the tender and juicy taste of our Premium Chicken Whole Skinless. Our chicken is sourced from trusted farms and processed with utmost care to ensure a delicious and healthy eating experience. With no added hormones or antibiotics, our chicken is perfect for grilling, roasting, or cooking your favorite chicken recipes.",
+        keyFeatures: [
+          "Tender and juicy: Our chicken is carefully selected and processed to ensure maximum tenderness and juiciness.",
+          "No added hormones or antibiotics: Our chicken is raised without any added hormones or antibiotics, ensuring a healthier eating experience.",
+          "Skinless: Our chicken is skinless, making it a great option for those looking for a leaner protein source.",
+          "Perfect for grilling, roasting, or cooking: Our chicken is versatile and can be cooked in a variety of ways to suit your taste preferences."
+        ],
+        productDetails: [
+          "Weight: 1.5 kg – 2 kg",
+          "Packaging: Vacuum–packed to ensure freshness",
+          "Shelf Life: 2–3 days from delivery date",
+          "Storage Instructions: Store in refrigerator at 0–4°C"
+        ],
+        imageSrc: "images/Premium Chicken Whole Skinless 1.png",
+        altText: "Chicken Boneless Breast",
+        productNameLine: "Chicken Boneless Breast Fillet 250 GM",
+        price: "₹107.25",
+        qualityNo: "1",
+        stockCount: "13"
+      },
+      goatCurry: {
+        title: "Goat Curry",
+        description:
+          "Indulge in the rich flavors of our Goat Curry, made with tender goat meat cooked in a blend of aromatic spices. Our curry is a perfect blend of traditional Indian flavors and modern convenience.",
+        keyFeatures: [
+          "Made with tender goat meat",
+          "Blended with aromatic spices",
+          "Traditional Indian flavors with modern convenience",
+          "Ready–to–eat, just heat and serve"
+        ],
+        productDetails: [
+          "Weight: 250gm, 500gm, 1kg",
+          "Packaging: Retort packaging for long shelf life",
+          "Shelf Life: 12 months from manufacturing date",
+          "Storage Instructions: Store in a cool, dry place",
+          "Heating Instructions: Heat in microwave or on stovetop"
+        ],
+        imageSrc: "images/Goat Currycut.png",
+        altText: "Goat Currycut",
+        productNameLine: "Goat Currycut 250 GM",
+        price: "₹212.25",
+        qualityNo: "1",
+        stockCount: "13"
+      },
+      freshMilk: {
+        title: "Fresh Milk",
+        description:
+          "Get the goodness of fresh milk delivered right to your doorstep! Our milk is sourced from local dairy farms and is rich in nutrients like calcium, protein, and vitamins. Perfect for cereal, cooking, or just a refreshing glass.",
+        keyFeatures: [
+          "Fresh and pure: Our milk is sourced from local dairy farms and is free from any additives or preservatives.",
+          "Rich in nutrients: Our milk is a good source of calcium, protein, and vitamins.",
+          "Perfect for various uses: Use our milk for cereal, cooking, baking, or just enjoy a refreshing glass."
+        ],
+        productDetails: [
+          "Type: Whole milk, Low–fat milk, Skim milk",
+          "Packaging: 1 liter, 500ml, 250ml",
+          "Shelf Life: 2–3 days from delivery date",
+          "Storage Instructions: Store in refrigerator at 0–4°C"
+        ],
+        imageSrc: "imagesbg/Nandini_Goodlife_Milk_500GM-removebg-preview.png",
+        altText: "Nandini Goodlife Milk",
+        productNameLine: "Nandini Goodlife Milk 500GM",
+        price: "₹29",
+        qualityNo: "1",
+        stockCount: "13"
+      },
+
+      milkyMistPaneer: {
+        title: "Milky Mist Paneer",
+        description:
+          "Indulge in the creamy goodness of Milky Mist Paneer, made from 100% pure milk. Our paneer is rich in protein, calcium, and vitamins, making it a nutritious addition to your favorite recipes.",
+        keyFeatures: [
+          "Made from 100% pure milk",
+          "High–quality protein source",
+          "Rich in calcium and vitamins",
+          "Versatile and easy to use in various recipes",
+        ],
+        productDetails: [
+          "Type: Full Cream Paneer, Low–Fat Paneer",
+          "Weight: 200gm, 400gm, 1kg",
+          "Packaging: Vacuum–packed to ensure freshness",
+          "Shelf Life: 5–7 days from manufacturing date",
+          "Storage Instructions: Store in refrigerator at 0–4°C",
+        ],
+        imageSrc: "imagesbg/Milky_Mist_Paneer-P-removebg-preview.png",
+        altText: "Milky Mist Paneer",
+        productNameLine: "Milky Mist Paneer 200 GM",
+        price: "₹128",
+        qualityNo: "1",
+        stockCount: "13",
+      },
+      sparUradDal: {
+        title: "Premium Dal",
+        description:
+          "Experience the authentic taste of India with our Premium Dal, carefully sourced from top suppliers to ensure maximum quality and flavor. Our dal is rich in protein, fiber, and nutrients, making it a nutritious addition to your meals.",
+        keyFeatures: [
+          "High-quality protein source",
+          "Rich in fiber and nutrients",
+          "Carefully sourced from top suppliers",
+          "Authentic Indian taste and flavor"
+        ],
+        productVariants: [
+          "Toor Dal: Yellow split pigeon peas",
+          "Moong Dal: Green gram split beans",
+          "Chana Dal: Split chickpeas",
+          "Masoor Dal: Red lentils"
+        ],
+        productDetails: [
+          "Weight: 500gm, 1kg, 2kg, 5kg",
+          "Packaging: Food-grade packaging to ensure freshness"
+        ],
+        imageSrc: "imagesbg/SPAR_Select_Urad_Dal_500G-removebg-preview.png",
+        altText: "SPAR Select Urad Dal 500G",
+        productNameLine: "SPAR Select Urad Dal 500G",
+        price: "₹110",
+        qualityNo: "1",
+        stockCount: "13"
+      },
+
+      bhagyalakshmiFriedGram: {
+        title: "Bhagyalakshmi Fried Gram",
+        description:
+          "Experience the authentic taste of India with our Premium Dal, carefully sourced from top suppliers to ensure maximum quality and flavor. Our dal is rich in protein, fiber, and nutrients, making it a nutritious addition to your meals.",
+        keyFeatures: [
+          "High–quality protein source",
+          "Rich in fiber and nutrients",
+          "Carefully sourced from top suppliers",
+          "Authentic Indian taste and flavor"
+        ],
+        productVariants: [
+          "Toor Dal: Yellow split pigeon peas",
+          "Moong Dal: Green gram split beans",
+          "Chana Dal: Split chickpeas",
+          "Masoor Dal: Red lentils"
+        ],
+        productDetails: [
+          "Weight: 500gm, 1kg, 2kg, 5kg",
+          "Packaging: Food–grade packaging to ensure freshness"
+        ],
+        imageSrc: "imagesbg/Bhagyalakshmi_Fried_Gram-P-removebg-preview.png",
+        altText: "Fried Gram Dal",
+        productNameLine: "Bhagyalakshmi Fried Gram 250 GM",
+        price: "₹40",
+        qualityNo: "1",
+        stockCount: "13"
+      },
+
+      popularMoongDal: {
+        title: "Popular Moong Dal",
+        description:
+          "Experience the authentic taste of India with our Premium Dal, carefully sourced from top suppliers to ensure maximum quality and flavor. Our dal is rich in protein, fiber, and nutrients, making it a nutritious addition to your meals.",
+        keyFeatures: [
+          "High–quality protein source",
+          "Rich in fiber and nutrients",
+          "Carefully sourced from top suppliers",
+          "Authentic Indian taste and flavor",
+        ],
+        productDetails: [
+          "Weight: 500gm, 1kg, 2kg, 5kg",
+          "Packaging: Food–grade packaging to ensure freshness",
+        ],
+        productVariants: [
+          "Toor Dal: Yellow split pigeon peas",
+          "Moong Dal: Green gram split beans",
+          "Chana Dal: Split chickpeas",
+          "Masoor Dal: Red lentils",
+        ],
+        imageSrc: "images/Screenshot_2025-03-31_150052-removebg-preview 1.png",
+        altText: "Moong Dal",
+        productNameLine: "Popular Moong Dal 1KG",
+        price: "₹159",
+        qualityNo: "1",
+        stockCount: "13",
+      },
+
+      royalGalaApple: {
+        title: "Royal Gala Apples",
+        description:
+          "Indulge in the sweet and crunchy goodness of our Royal Gala Apples, carefully hand–picked from select orchards to ensure maximum flavor and freshness.",
+        keyFeatures: [
+          "Sweet and crunchy texture",
+          "Juicy and flavorful",
+          "Carefully hand–picked from select orchards",
+          "Perfect snack for any time of day",
+        ],
+        productDetails: [
+          "Weight: 500gm, 1kg, 2kg, 5kg",
+          "Packaging: Food–grade packaging to ensure freshness",
+          "Shelf Life: 7–10 days from delivery date",
+          "Storage Instructions: Store in refrigerator at 0–4°C",
+        ],
+        imageSrc: "imagesbg/Apple_Royalgala-removebg-preview.png",
+        altText: "Royal Gala Apple",
+        productNameLine: "Apple Royalgala 500 GM",
+        price: "₹124.5",
+        qualityNo: "1",
+        stockCount: "13"
+      },
+      appleShimla: {
+        title: "Apple Shimla",
+        description:
+          "Indulge in the sweet and crunchy goodness of our Royal Gala Apples, carefully hand–picked from select orchards to ensure maximum flavor and freshness.",
+        keyFeatures: [
+          "Sweet and crunchy texture",
+          "Juicy and flavorful",
+          "Carefully hand–picked from select orchards",
+          "Perfect snack for any time of day"
+        ],
+        productDetails: [
+          "Weight: 500gm, 1kg, 2kg, 5kg",
+          "Packaging: Food–grade packaging to ensure freshness",
+          "Shelf Life: 7–10 days from delivery date",
+          "Storage Instructions: Store in refrigerator at 0–4°C"
+        ],
+        imageSrc: "imagesbg/Apple_Shimla-removebg-preview.png",
+        altText: "Apple Shimla",
+        productNameLine: "Apple Shimla 500 GM",
+        price: "₹114.5",
+        qualityNo: "1",
+        stockCount: "13"
+      },
+      bananaRobusta: {
+        title: "Robusta Bananas",
+        description:
+          "Enjoy the delicious taste and numerous health benefits of our Robusta Bananas, carefully hand–picked from select plantations to ensure maximum freshness and quality.",
+        keyFeatures: [
+          "Sweet and creamy taste",
+          "High in potassium, vitamins, and minerals",
+          "Carefully hand–picked from select plantations",
+          "Perfect snack for any time of day"
+        ],
+        productDetails: [
+          "Weight: 500gm, 1kg, 2kg, 5kg",
+          "Packaging: Food–grade packaging to ensure freshness",
+          "Shelf Life: 3–5 days from delivery date",
+          "Storage Instructions: Store at room temperature or in refrigerator"
+        ],
+        imageSrc: "imagesbg/Banana_Robusta-removebg-preview.png",
+        altText: "Banana Robusta",
+        productNameLine: "Banana Robusta 500 GM",
+        price: "₹27.5",
+        qualityNo: "1",
+        stockCount: "13"
+      }
+
+    };
+
+    // Get product parameter from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const productKey = urlParams.get("product") || "popularMoongDal"; // default product
+
+    const product = products[productKey];
+
+    if (!product) {
+      document.body.innerHTML = "<h1>Product not found</h1>";
+      throw new Error("Product not found");
+    }
+
+    // Build product info HTML
+    const productInfoDiv = document.getElementById("product-info");
+    let keyFeaturesHTML = product.keyFeatures
+      .map((feature) => `<li>${feature}</li>`)
+      .join("");
+    let productDetailsHTML = product.productDetails
+      .map((detail) => `<li>${detail}</li>`)
+      .join("");
+
+    // If productVariants exists, add that section too (only for moong dal)
+    let productVariantsHTML = "";
+    if (product.productVariants) {
+      productVariantsHTML =
+        `<h3>Product Variants</h3><ul>` +
+        product.productVariants.map((v) => `<li>${v}</li>`).join("") +
+        `</ul>`;
+    }
+
+    productInfoDiv.innerHTML = `
+      <h1>${product.title}</h1>
+      <h3>Product Description</h3>
+      <p>${product.description}</p>
+
+      <h3>Key Features</h3>
+      <ul>${keyFeaturesHTML}</ul>
+
+      ${productVariantsHTML}
+
+      <h3>Product Details</h3>
+      <ul>${productDetailsHTML}</ul>
+    `;
+
+    // Build product image section HTML
+    const productImageSectionDiv = document.getElementById("product-image-section");
+    productImageSectionDiv.innerHTML = `
+      <img id="product-image" src="${product.imageSrc}" alt="${product.altText}" />
+      <h2 id="product-name">${product.productNameLine}</h2>
+      <p class="price" id="product-price">${product.price}</p>
+      <div class="stock-info">
+        <p><strong>Quality No :</strong> ${product.qualityNo}</p>
+        <p><span class="heart">❤️</span> <strong>In Stock :</strong> ${product.stockCount}</p>
+      </div>
+      <div class="buttons">
+        <button class="add" onclick="addToCart()">Add to cart</button>
+        <button class="buy" onclick="buyNow()">Buy Now</button>
+      </div>
+    `;
+
+
+
+    function buyNow() {
+  const numericPrice = parseFloat(String(product.price).replace(/[₹,]/g, "").trim()) || 0;
+
+  // Build product object for checkout
+  const selectedProduct = {
+    name: product.productNameLine,
+    price: numericPrice,
+    img: product.imageSrc,
+    quantity: 1,
+    totalPrice: "₹" + numericPrice.toFixed(2)
+  };
+
+  // Get existing cart items
+  const cartItems = JSON.parse(localStorage.getItem("cart") || "[]");
+
+  // ✅ Merge cart + selected product (avoid duplicates)
+  const mergedItems = [...cartItems];
+  const existingIndex = mergedItems.findIndex(item => item.name === selectedProduct.name);
+
+  if (existingIndex !== -1) {
+    mergedItems[existingIndex].quantity += 1;
+  } else {
+    mergedItems.push(selectedProduct);
+  }
+
+  // Save merged list to securedCheckoutProduct
+  localStorage.setItem("securedCheckoutProduct", JSON.stringify(mergedItems));
+
+  // Redirect to checkout page with secure flag
+  window.location.href = "checkout.html?secure=true";
+}
+
+window.buyNow = buyNow;
+  </script>
+
+
+
+
+  <script>
+
+    window.addToCart = function () {
+      // Get the existing cart or initialize
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+      // Build the current product data
+      const currentProduct = {
+        key: productKey,
+        name: product.productNameLine,
+        price: parseFloat(product.price.replace('₹', '')),
+        img: product.imageSrc,
+        quantity: 1
+      };
+
+      // Check if product already exists
+      const existingIndex = cart.findIndex(item => item.name === currentProduct.name);
+
+      if (existingIndex !== -1) {
+        cart[existingIndex].quantity += 1;
+      } else {
+        cart.push(currentProduct);
+      }
+
+      // Save updated cart
+      localStorage.setItem('cart', JSON.stringify(cart));
+
+      // Optional: update session cartCount for top-right badge
+      let count = parseInt(sessionStorage.getItem('cartCount')) || 0;
+      sessionStorage.setItem('cartCount', count + 1);
+
+      alert(`${currentProduct.name} added to cart!`);
+    };
+
+
+
+  </script>
+
+  <script>
+    document.getElementById('back-button').addEventListener('click', () => {
+      window.location.href = 'index.html'; // Change this if your home page filename is different
+    });
+  </script>
+  <!-- Leaflet Map (for location picker) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// --------------------
+// USER AUTH + PROFILE
+// --------------------
+function getUsers() {
+  return JSON.parse(localStorage.getItem("gh_users") || "{}");
+}
+
+function saveUsers(users) {
+  localStorage.setItem("gh_users", JSON.stringify(users));
+}
+
+function getCurrentUser() {
+  const email = localStorage.getItem("gh_current_user");
+  if (!email) return null;
+  const users = getUsers();
+  return users[email] || null;
+}
+
+function setCurrentUser(email) {
+  if (email) localStorage.setItem("gh_current_user", email);
+  else localStorage.removeItem("gh_current_user");
+}
+
+// --------------------
+// SIGN UP
+// --------------------
+function handleSignup() {
+  const name = document.getElementById("signupName").value.trim();
+  const email = document.getElementById("signupEmail").value.trim().toLowerCase();
+  const phone = document.getElementById("signupPhone").value.trim();
+  const password = document.getElementById("signupPassword").value.trim();
+
+  if (!name || !email || !password) {
+    alert("Please fill all required fields (Name, Email, Password).");
+    return;
+  }
+
+  const users = getUsers();
+  if (users[email]) {
+    alert("User already exists. Please login instead.");
+    closeModal('signupModal');
+    openModal('loginModal');
+    return;
+  }
+
+  users[email] = { name, email, phone, password, location: "Set your location" };
+  saveUsers(users);
+  setCurrentUser(email);
+
+  alert(`Welcome, ${name}! 🎉`);
+  closeModal('signupModal');
+  updateNavbar();
+}
+
+// --------------------
+// LOGIN
+// --------------------
+function handleLogin() {
+  const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+  const password = document.getElementById("loginPassword").value.trim();
+
+  const users = getUsers();
+  const user = users[email];
+
+  if (!user || user.password !== password) {
+    alert("Invalid email or password.");
+    return;
+  }
+
+  setCurrentUser(email);
+  alert(`Welcome back, ${user.name}! 🌿`);
+  closeModal('loginModal');
+  updateNavbar();
+}
+
+// --------------------
+// LOGOUT
+// --------------------
+function handleLogout() {
+  setCurrentUser(null);
+  updateNavbar();
+  alert("You have been logged out.");
+}
+
+// --------------------
+// NAVBAR UPDATE
+// --------------------
+function updateNavbar() {
+  const user = getCurrentUser();
+  const accountBtn = document.querySelector('[onclick*="accountModal"]');
+  const loginBtn = document.querySelector('.login-icon .text');
+  const welcomeMsg = document.getElementById('welcome-msg');
+  const locSpan = document.getElementById('current-location-text');
+
+  if (user) {
+    loginBtn.textContent = "Logout";
+    loginBtn.parentElement.onclick = handleLogout;
+    if (welcomeMsg) welcomeMsg.textContent = `Welcome, ${user.name}`;
+    if (locSpan) locSpan.textContent = user.location || "Set your location";
+  } else {
+    loginBtn.textContent = "Login / Signup";
+    loginBtn.parentElement.onclick = () => openModal('loginModal');
+    if (welcomeMsg) welcomeMsg.textContent = "";
+    if (locSpan) locSpan.textContent = "Set your location";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", updateNavbar);
+
+// --------------------
+// ACCOUNT MODAL FILL
+// --------------------
+function openAccountModal() {
+  const user = getCurrentUser();
+  openModal('accountModal');
+
+  const modal = document.querySelector('#accountModal .modal');
+  if (!user) {
+    modal.innerHTML = `
+      <span class="close-btn" onclick="closeModal('accountModal')">&times;</span>
+      <h2>Not logged in</h2>
+      <button onclick="openModal('loginModal'); closeModal('accountModal')">Login</button>`;
+    return;
+  }
+
+  modal.innerHTML = `
+    <span class="close-btn" onclick="closeModal('accountModal')">&times;</span>
+    <h2>Welcome, ${user.name}</h2>
+    <p><strong>Email:</strong> ${user.email}</p>
+    <p><strong>Phone:</strong> ${user.phone || '-'}</p>
+    <p><strong>Location:</strong> ${user.location || 'Not set'}</p>
+    <hr>
+    <ul>
+      <li><a href="account.html">Your Account</a></li>
+      <li><a href="orders.html">Your Orders</a></li>
+      <li><a href="wishlist.html">Your Wishlist</a></li>
+      <li><a href="saveitems.html">Subscribe & Save</a></li>
+    </ul>
+    <button onclick="handleLogout()">Logout</button>`;
+}
+
+// --------------------
+// LOCATION PICKER MAP
+// --------------------
+function openLocationMap() {
+  openModal('locationModal');
+
+  // Replace modal content with map
+  const modal = document.querySelector('#locationModal .modal');
+  modal.innerHTML = `
+    <span class="close-btn" onclick="closeModal('locationModal')">&times;</span>
+    <h2>Select Your Delivery Location</h2>
+    <div id="map" style="height:350px;border-radius:10px;"></div>
+    <p id="pickedAddress" style="margin-top:10px;font-weight:600;color:#4a7d20;"></p>
+    <button style="margin-top:10px;" onclick="closeModal('locationModal')">Done</button>
+  `;
+
+  const map = L.map('map').setView([13.0827, 80.2707], 12); // Default: Chennai
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+
+  let marker;
+  map.on('click', async (e) => {
+    const { lat, lng } = e.latlng;
+    if (marker) marker.remove();
+    marker = L.marker([lat, lng]).addTo(map);
+
+    // Reverse geocode
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+    const data = await response.json();
+    const address = data.display_name || `Lat: ${lat.toFixed(4)}, Lon: ${lng.toFixed(4)}`;
+
+    document.getElementById('pickedAddress').textContent = address;
+
+    // Save location
+    const user = getCurrentUser();
+    if (user) {
+      const users = getUsers();
+      users[user.email].location = address;
+      saveUsers(users);
+      updateNavbar();
+    }
+  });
+}
+</script>
+<!-- Leaflet (Online Map for Location) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// ---------- Modal Utilities ----------
+function openModal(id){ document.getElementById(id).style.display="flex"; }
+function closeModal(id){ document.getElementById(id).style.display="none"; }
+function toggleModals(from,to){ closeModal(from); openModal(to); }
+
+// ---------- Storage Helpers ----------
+function getUsers(){ return JSON.parse(localStorage.getItem("gh_users")||"{}"); }
+function saveUsers(u){ localStorage.setItem("gh_users",JSON.stringify(u)); }
+function getCurrentUserEmail(){ return localStorage.getItem("gh_current_user"); }
+function setCurrentUserEmail(e){ e?localStorage.setItem("gh_current_user",e):localStorage.removeItem("gh_current_user"); }
+function getCurrentUser(){ const e=getCurrentUserEmail(); return e?getUsers()[e]||null:null; }
+
+// ---------- Navbar Update ----------
+function updateNavbar(){
+  const user=getCurrentUser();
+  const welcome=document.getElementById("welcome-msg");
+  const loc=document.getElementById("current-location-text");
+  const loginBtn=document.querySelector(".login-icon .text");
+  if(user){
+    if(welcome)welcome.textContent=`Welcome, ${user.name} 🌿`;
+    if(loc)loc.textContent=user.location||"Set your location";
+    if(loginBtn)loginBtn.textContent="Logout";
+    document.querySelector(".login-icon").onclick=handleLogout;
+  }else{
+    if(welcome)welcome.textContent="";
+    if(loc)loc.textContent="Set your location";
+    if(loginBtn)loginBtn.textContent="Login / Signup";
+    document.querySelector(".login-icon").onclick=()=>openModal('loginModal');
+  }
+}
+
+// ---------- Signup ----------
+function handleSignup(){
+  const name=signupName.value.trim();
+  const email=signupEmail.value.trim().toLowerCase();
+  const phone=signupPhone.value.trim();
+  const password=signupPassword.value.trim();
+  if(!name||!email||!password){alert("Please fill all required fields.");return;}
+  const users=getUsers();
+  if(users[email]){alert("User already exists. Please login.");toggleModals('signupModal','loginModal');return;}
+  users[email]={name,email,phone,password,location:"Set your location"};
+  saveUsers(users);
+  setCurrentUserEmail(email);
+  closeModal('signupModal');
+  alert(`Welcome, ${name}! 🎉`);
+  updateNavbar();
+}
+
+// ---------- Login ----------
+function handleLogin(){
+  const email=loginEmail.value.trim().toLowerCase();
+  const pass=loginPassword.value.trim();
+  const users=getUsers(); const user=users[email];
+  if(!user||user.password!==pass){alert("Invalid email or password.");return;}
+  setCurrentUserEmail(email);
+  closeModal('loginModal');
+  alert(`Welcome back, ${user.name}!`);
+  updateNavbar();
+  updateAccountModal();
+}
+
+// ---------- Logout ----------
+function handleLogout(){
+  setCurrentUserEmail(null);
+  updateNavbar();
+  updateAccountModal();
+  alert("You have been logged out.");
+}
+
+// ---------- Account Modal ----------
+function updateAccountModal(){
+  const user=getCurrentUser();
+  const container=document.getElementById("accountContent");
+  if(!user){
+    container.innerHTML=`
+      <h2>Your Account</h2>
+      <p>You are not logged in.</p>
+      <button class='continue-btn' onclick='openModal("loginModal")'>Login</button>`;
+    return;
+  }
+  container.innerHTML=`
+    <h2>Welcome, ${user.name}</h2>
+    <p><strong>Email:</strong> ${user.email}</p>
+    <p><strong>Phone:</strong> ${user.phone||'-'}</p>
+    <p><strong>Location:</strong> ${user.location||'Not set'}</p>
+    <hr>
+    <ul>
+      <li><a href='account.html'>Your Account</a></li>
+      <li><a href='orders.html'>Your Orders</a></li>
+      <li><a href='wishlist.html'>Your Wishlist</a></li>
+      <li><a href='saveitems.html'>Subscribe & Save</a></li>
+    </ul>
+    <button class='continue-btn' onclick='openLocationMap()'>Change Location</button>
+    <button class='continue-btn' onclick='handleLogout()'>Logout</button>`;
+}
+
+// ---------- Location Picker (Leaflet) ----------
+function openLocationMap(){
+  openModal('locationModal');
+  const mapDiv=document.getElementById('map');
+  mapDiv.innerHTML="";
+  const map=L.map('map').setView([13.0827,80.2707],12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    maxZoom:19, attribution:'&copy; OpenStreetMap'
+  }).addTo(map);
+  let marker;
+  map.on('click',async e=>{
+    const{lat,lng}=e.latlng;
+    if(marker)marker.remove();
+    marker=L.marker([lat,lng]).addTo(map);
+    const res=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+    const data=await res.json();
+    const address=data.display_name||`Lat:${lat.toFixed(4)},Lon:${lng.toFixed(4)}`;
+    document.getElementById('pickedAddress').textContent=address;
+    const user=getCurrentUser(); if(user){
+      const users=getUsers(); users[user.email].location=address; saveUsers(users);
+      updateNavbar(); updateAccountModal();
+    }
+  });
+}
+
+// ---------- Init ----------
+document.addEventListener("DOMContentLoaded",()=>{ updateNavbar(); updateAccountModal(); });
+</script>
+<script>
+// --------------------
+// USER AUTH + PROFILE
+// --------------------
+function getUsers() {
+  return JSON.parse(localStorage.getItem("gh_users") || "{}");
+}
+
+function saveUsers(users) {
+  localStorage.setItem("gh_users", JSON.stringify(users));
+}
+
+function getCurrentUser() {
+  const email = localStorage.getItem("gh_current_user");
+  if (!email) return null;
+  const users = getUsers();
+  return users[email] || null;
+}
+
+function setCurrentUser(email) {
+  if (email) localStorage.setItem("gh_current_user", email);
+  else localStorage.removeItem("gh_current_user");
+}
+
+// --------------------
+// SIGN UP
+// --------------------
+function handleSignup() {
+  const name = document.getElementById("signupName").value.trim();
+  const email = document.getElementById("signupEmail").value.trim().toLowerCase();
+  const phone = document.getElementById("signupPhone").value.trim();
+  const password = document.getElementById("signupPassword").value.trim();
+
+  if (!name || !email || !password) {
+    alert("Please fill all required fields (Name, Email, Password).");
+    return;
+  }
+
+  const users = getUsers();
+  if (users[email]) {
+    alert("User already exists. Please login instead.");
+    closeModal('signupModal');
+    openModal('loginModal');
+    return;
+  }
+
+  users[email] = { name, email, phone, password, location: "Set your location" };
+  saveUsers(users);
+  setCurrentUser(email);
+
+  alert(`Welcome, ${name}! 🎉`);
+  closeModal('signupModal');
+  updateNavbar();
+}
+
+// --------------------
+// LOGIN
+// --------------------
+function handleLogin() {
+  const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+  const password = document.getElementById("loginPassword").value.trim();
+
+  const users = getUsers();
+  const user = users[email];
+
+  if (!user || user.password !== password) {
+    alert("Invalid email or password.");
+    return;
+  }
+
+  setCurrentUser(email);
+  alert(`Welcome back, ${user.name}! 🌿`);
+  closeModal('loginModal');
+  updateNavbar();
+}
+
+// --------------------
+// LOGOUT
+// --------------------
+function handleLogout() {
+  setCurrentUser(null);
+  updateNavbar();
+  alert("You have been logged out.");
+}
+
+// --------------------
+// NAVBAR UPDATE
+// --------------------
+function updateNavbar() {
+  const user = getCurrentUser();
+  const accountBtn = document.querySelector('[onclick*="accountModal"]');
+  const loginBtn = document.querySelector('.login-icon .text');
+  const welcomeMsg = document.getElementById('welcome-msg');
+  const locSpan = document.getElementById('current-location-text');
+
+  if (user) {
+    loginBtn.textContent = "Logout";
+    loginBtn.parentElement.onclick = handleLogout;
+    if (welcomeMsg) welcomeMsg.textContent = `Welcome, ${user.name}`;
+    if (locSpan) locSpan.textContent = user.location || "Set your location";
+  } else {
+    loginBtn.textContent = "Login / Signup";
+    loginBtn.parentElement.onclick = () => openModal('loginModal');
+    if (welcomeMsg) welcomeMsg.textContent = "";
+    if (locSpan) locSpan.textContent = "Set your location";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", updateNavbar);
+
+// --------------------
+// ACCOUNT MODAL FILL
+// --------------------
+function openAccountModal() {
+  const user = getCurrentUser();
+  openModal('accountModal');
+
+  const modal = document.querySelector('#accountModal .modal');
+  if (!user) {
+    modal.innerHTML = `
+      <span class="close-btn" onclick="closeModal('accountModal')">&times;</span>
+      <h2>Not logged in</h2>
+      <button onclick="openModal('loginModal'); closeModal('accountModal')">Login</button>`;
+    return;
+  }
+
+  modal.innerHTML = `
+    <span class="close-btn" onclick="closeModal('accountModal')">&times;</span>
+    <h2>Welcome, ${user.name}</h2>
+    <p><strong>Email:</strong> ${user.email}</p>
+    <p><strong>Phone:</strong> ${user.phone || '-'}</p>
+    <p><strong>Location:</strong> ${user.location || 'Not set'}</p>
+    <hr>
+    <ul>
+      <li><a href="account.html">Your Account</a></li>
+      <li><a href="orders.html">Your Orders</a></li>
+      <li><a href="wishlist.html">Your Wishlist</a></li>
+      <li><a href="saveitems.html">Subscribe & Save</a></li>
+    </ul>
+    <button onclick="handleLogout()">Logout</button>`;
+}
+
+// --------------------
+// LOCATION PICKER MAP
+// --------------------
+function openLocationMap() {
+  openModal('locationModal');
+
+  // Replace modal content with map
+  const modal = document.querySelector('#locationModal .modal');
+  modal.innerHTML = `
+    <span class="close-btn" onclick="closeModal('locationModal')">&times;</span>
+    <h2>Select Your Delivery Location</h2>
+    <div id="map" style="height:350px;border-radius:10px;"></div>
+    <p id="pickedAddress" style="margin-top:10px;font-weight:600;color:#4a7d20;"></p>
+    <button style="margin-top:10px;" onclick="closeModal('locationModal')">Done</button>
+  `;
+
+  const map = L.map('map').setView([13.0827, 80.2707], 12); // Default: Chennai
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+
+  let marker;
+  map.on('click', async (e) => {
+    const { lat, lng } = e.latlng;
+    if (marker) marker.remove();
+    marker = L.marker([lat, lng]).addTo(map);
+
+    // Reverse geocode
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+    const data = await response.json();
+    const address = data.display_name || `Lat: ${lat.toFixed(4)}, Lon: ${lng.toFixed(4)}`;
+
+    document.getElementById('pickedAddress').textContent = address;
+
+    // Save location
+    const user = getCurrentUser();
+    if (user) {
+      const users = getUsers();
+      users[user.email].location = address;
+      saveUsers(users);
+      updateNavbar();
+    }
+  });
+}
+</script>
+  <!-- <script src="script.js"></script> -->
+</body>
+
+</html>

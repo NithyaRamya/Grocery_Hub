@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secure Checkout • GroceryHub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      background-color: #f5fbe6;
+      color: #333;
+    }
+
+    .checkout-container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+    }
+
+    h1 {
+      color: #4a7d20;
+      text-align: center;
+      font-size: 28px;
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #ddd;
+      padding: 15px 0;
+    }
+
+    .cart-item img {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      margin-right: 15px;
+    }
+
+    .item-info {
+      flex: 1;
+    }
+
+    .item-info p {
+      margin: 5px 0;
+    }
+
+    .bill-summary {
+      background: #f0fad9;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .bill-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 8px 0;
+    }
+
+    .bill-row.total {
+      font-weight: bold;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+      font-size: 18px;
+    }
+
+    .payment-options {
+      background: #f0fad9;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .payment-options label {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+
+    .pay-btn {
+      background-color: #8bc34a;
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 30px;
+      margin-top: 30px;
+      cursor: pointer;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .pay-btn:hover {
+      background-color: #7aa436;
+    }
+  </style>
+</head>
+
+<body>
+   <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      background-color: #fff;
+      color: #222;
+    }
+
+    .top-bar {
+      background-color: #8BC34A;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      padding: 2px 20px;
+      font-size: 13px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .top-bar .left,
+    .top-bar .right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      background-color: white;
+      /* border-bottom: 1px solid #eee;*/
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #222;
+      font-size: 16px;
+      padding-bottom: 3px;
+    }
+
+    nav a.active {
+      border-bottom: 2px solid #8BC34A;
+    }
+
+    .icons {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      font-size: 13px;
+      color: #444;
+    }
+
+    .icons i {
+      font-size: 18px;
+      display: block;
+      text-align: center;
+    }
+
+    .icons div {
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+
+      header,
+      .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      nav,
+      .icons {
+        margin-top: 10px;
+        gap: 15px;
+      }
+    }
+
+    .login-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+    }
+
+    .login-icon .icon {
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .login-icon .text {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .modal {
+      background-color: #e6f4d8;
+      padding: 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+    }
+
+    .modal h2 {
+      margin-top: 0;
+    }
+
+    .modal .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .modal button {
+      background-color: #8BC34A;
+      border: none;
+      padding: 10px 25px;
+      font-size: 16px;
+      color: white;
+      border-radius: 10px;
+      margin: 15px 0;
+      cursor: pointer;
+    }
+
+    .modal input[type="text"] {
+      padding: 10px;
+      width: calc(100% - 100px);
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-right: 10px;
+    }
+
+    .modal .input-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .phone-input {
+      background: #8BC34A;
+      color: #222;
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    .phone-input input {
+      border: none;
+      outline: none;
+      background: transparent;
+      color: #222;
+      margin-left: 10px;
+      width: 100%;
+    }
+
+    .login-modal {
+      background-color: #DFF3C9;
+      text-align: center;
+      padding: 40px 30px;
+    }
+
+    .login-img {
+      width: 100%;
+      max-width: 280px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    .login-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 10px 0 5px;
+      color: #000;
+    }
+
+    .login-subtitle {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .phone-input.full-width {
+      background: #8BC34A;
+      color: #fff;
+      padding: 14px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 auto 25px;
+      max-width: 100%;
+    }
+
+    .phone-input.full-width input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: white;
+      font-size: 16px;
+      width: 100%;
+    }
+
+    .login-btn {
+      background: white;
+      color: #8BC34A;
+      font-weight: 600;
+      border-radius: 30px;
+      padding: 14px 0;
+      font-size: 18px;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .terms-text {
+      font-size: 11px;
+      color: #333;
+      margin-top: 15px;
+    }
+
+    .continue-btn {
+      width: 100%;
+      background: white;
+      color: #8BC34A;
+      font-weight: bold;
+      font-size: 20px;
+      padding: 14px 0;
+      border-radius: 30px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .continue-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .otp-input {
+      width: 300px;
+      /* Make inputs full width of their container */
+      box-sizing: border-box;
+      /* Includes padding and border in width */
+      padding: 12px 15px;
+      /* Consistent padding */
+      margin-bottom: 15px;
+      /* Space between inputs */
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    /*!!!!!! Footer styles !!!!!!! */
+.footer {
+  background: #97cf5c;
+  color: white;
+  padding: 40px 20px 20px;
+}
+
+
+.footer-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 40px;
+  align-items: flex-start;
+  position: relative;
+}
+
+/* This holds logo on the left */
+.footer-logo {
+  flex: 2 1 250px;
+}
+
+/* This holds all three text columns in the middle */
+.footer-columns {
+  flex: 2 1 100px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  /* gap:5px; */
+}
+
+/* This aligns Connect With Us under columns, right-aligned beside logo */
+.footer-social {
+  position: absolute;
+  right: 0;
+  bottom: -10px;
+  text-align: right;
+  padding-top: 10px;
+}
+
+.footer-logo img {
+  width: 30px;
+  border-radius: 50%;
+  
+}
+
+.footer-logo h2 {
+  margin: 10px 0 10px;
+}
+
+.footer-logo p {
+  max-width: 600px;
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.footer-logo .email,
+.footer-logo .web {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.footer-logo img[alt$="Logo"] {
+  width: 60px;
+  margin-left:10px;
+}
+
+.footer-columns {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.footer-columns h4 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.footer-columns ul {
+  list-style: none;
+  padding: 0;
+  font-size: 14px;
+}
+
+.footer-columns li {
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.footer-social h4 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.footer-social .social-icons img {
+  width: 24px;
+  margin-right: 10px;
+}
+
+.store-icons img {
+  width: 120px;
+  margin: 10px 10px 0 0;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+  </style>
+</head>
+
+<body>
+  <div class="top-bar">
+    <div class="left">
+      <span><img src="images/Vector V.png"> +91 87642 987687</span>
+      <span><img src="images/Vector 1.png"> +91 87642 987687</span>
+    </div>
+    <div>World Fastest online Shopping Destination</div>
+    <div class="right">
+      <div class="dropdown" onclick="openModal('locationModal')">
+        <span>Current Location <img src="images/Vector.png"></span>
+      </div>
+      <div class="dropdown" onclick="openModal('accountModal')">
+        <span>Account <img src="images/Vector.png"></span>
+      </div>
+      <div class="dropdown login-icon" onclick="openModal('loginModal')">
+        <span class="icon"><img src="images/SVG.png"></span>
+        <span class="text">Login/Logout</span>
+      </div>
+    </div>
+  </div>
+
+  <header>
+    <div class="logo">
+      <img src="images/Ellipse 1.png" alt="logo" />
+      <strong style="color: #7CB342;">GroceryHub</strong>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="categories.html">Categories</a>
+      <a href="deals.html">Deals</a>
+    </nav>
+    <div class="icons">
+      <div>
+        <img src="images/SEARCH.png"><br>
+        <span style="color:#8BC34A">Search</span>
+      </div>
+      <div class="cart-container">
+        <img src="images/Vector 8.png" class="cart-icon" id="cart-icon"><br>
+        <span class="cart-badge" id="cart-count">0</span>
+        <span style="color:#8BC34A">Cart</span>
+      </div>
+      <div>
+        <div>
+          <img src="images/Vector O.png"><br>
+          <span style="color:#8BC34A">Liked</span>
+        </div>
+      </div>
+  </header>
+  <div class="checkout-container">
+    <h1>🛍️ Secure Checkout</h1>
+    <div id="order-summary"></div>
+
+    <div class="bill-summary">
+      <h3>Bill Details</h3>
+      <div class="bill-row"><span>Subtotal</span><span id="subtotal">₹0.00</span></div>
+      <div class="bill-row"><span>Handling Fee</span><span>₹10</span></div>
+      <div class="bill-row total"><span>To Pay</span><span id="total">₹0.00</span></div>
+    </div>
+
+    <div class="payment-options">
+      <h3>Payment Options</h3>
+      <label><input type="radio" name="payment" value="paypal"> PayPal</label>
+      <label><input type="radio" name="payment" value="card" checked> Credit Card / Debit Card</label>
+    </div>
+
+    <button class="pay-btn" id="payConfirmBtn">Pay & Confirm</button>
+  </div>
+ <!-- Footer Section -->
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="footer-logo">
+        <div class="logo-heading">
+          <img src="images/Ellipse 1.png" alt="Logo">
+          <h2>GroceryHub</h2>
+        </div>
+        <p>GroceryHub brings its customers low prices every day. We offer a wide choice covering fresh & packaged food,
+          grains, pulses, dairy, frozen, plastics, utensils, crockery, travel, stationery, & more. SPAR has 13,900
+          stores in 48 countries. In India, SPAR has 23 stores across 8 cities.</p>
+        <p class="email"><img src="images/Mail.png" alt=""> business@groceryhub.com</p>
+        <p class="web"><img src="images/Internet.png" alt=""> www.Grocery.in</p>
+      </div>
+
+      <div class="footer-columns">
+        <div>
+          <h4>Our Services</h4>
+          <ul>
+            <li>Your Account</li>
+            <li>FAQS</li>
+            <li>Store List</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Let Us Help You</h4>
+          <ul>
+            <li>Help & Support</li>
+            <li>Share Feedback</li>
+            <li>Call Us</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <ul>
+            <li>About Us</li>
+            <li>Terms</li>
+            <li>Privacy Policy</li>
+            <li>Return & Refund Policy</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-social">
+        <h4>Connect With Us</h4>
+        <div class="social-icons">
+          <img src="images/Item.png" alt="Facebook">
+          <img src="images/x.png" alt="X">
+          <img src="images/Item P.png" alt="Instagram">
+          <img src="images/Item 9.png" alt="LinkedIn">
+        </div>
+        <div class="store-icons">
+          <img src="images/Link → app-store-image.png" alt="App Store">
+          <img src="images/Link → paly-store-image.png" alt="Play Store">
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      GroceryHub India © All rights Reserved
+    </div>
+  </footer>
+  <script>
+    function updateCartCount() {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+      document.getElementById('cart-count').textContent = totalQty;
+    }
+    // Handle "+" button click
+    function setupAddButtons() {
+      const addButtons = document.querySelectorAll('.add-button');
+
+      addButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.preventDefault(); // Prevent navigating to product page when clicking the button inside <a>
+
+          let currentCount = parseInt(sessionStorage.getItem('cartCount')) || 0;
+          currentCount += 1;
+
+          sessionStorage.setItem('cartCount', currentCount);
+          updateCartCount();
+        });
+      });
+    }
+
+    // On page load
+    window.addEventListener('load', () => {
+      updateCartCount();
+      setupAddButtons();
+    });
+
+    window.addEventListener('load', updateCartCount);
+  </script>
+  <script src="script.js"></script>
+  <script>
+    let generatedOTP = "";
+
+    function openModal(id) {
+      document.getElementById(id).style.display = "flex";
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = "none";
+      document.getElementById("phoneInput").value = "";
+      document.getElementById("otpInput").value = "";
+      document.getElementById("otpSection").style.display = "none";
+      document.querySelector('.login-btn').textContent = "Continue";
+      generatedOTP = "";
+      document.getElementById(id).style.display = "none";
+
+      // Clear sign-up inputs
+      if (id === "signupModal") {
+        document.getElementById("signupName").value = "";
+        document.getElementById("signupEmail").value = "";
+        document.getElementById("signupPhone").value = "";
+        document.getElementById("signupPassword").value = "";
+      }
+    }
+
+    function handleContinue() {
+      const phone = document.getElementById("phoneInput").value.trim();
+      const otpSection = document.getElementById("otpSection");
+      const continueBtn = document.querySelector('.login-btn');
+
+      if (continueBtn.textContent === "Continue") {
+        if (phone.length !== 10 || isNaN(phone)) {
+          alert("Please enter a valid 10-digit phone number.");
+          return;
+        }
+
+        // Generate fake OTP
+        generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+        alert("Your OTP is: " + generatedOTP); // Mocking SMS
+
+        otpSection.style.display = "block";
+        continueBtn.textContent = "Verify OTP";
+      } else {
+        // Verify OTP
+        const enteredOTP = document.getElementById("otpInput").value.trim();
+
+        if (enteredOTP === generatedOTP) {
+          alert("OTP Verified! You are logged in.");
+          closeModal("loginModal");
+        } else {
+          alert("Invalid OTP. Please try again.");
+        }
+      }
+    }
+
+
+  </script>
+  <!-- JavaScript -->
+  <script>
+    function scrollToSection(id) {
+      document.getElementById(id).scrollIntoView({
+        behavior: 'smooth'
+      });
+    }
+  </script>
+  <script>document.querySelector(".buy-btn").addEventListener("click", () => {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  if (cart.length === 0) {
+    alert("Your cart is empty!");
+    return;
+  }
+  window.location.href = "checkout.html";
+});</script>
+  <script>
+  // ✅ Unified checkout logic: merge cart + Buy Now product
+  let products = [];
+
+  const secureItems = JSON.parse(localStorage.getItem("securedCheckoutProduct") || "[]");
+  const cartItems = JSON.parse(localStorage.getItem("cart") || "[]");
+
+  // If secure checkout (from product page) is triggered, merge cart items too
+  if (window.location.search.includes("secure=true") && secureItems.length > 0) {
+    // merge cart + secure products
+    const mergedNames = new Set();
+    products = [...cartItems, ...secureItems].reduce((unique, item) => {
+      if (!mergedNames.has(item.name)) {
+        mergedNames.add(item.name);
+        unique.push(item);
+      }
+      return unique;
+    }, []);
+  } else {
+    // otherwise show cart only
+    products = cartItems;
+  }
+
+  // Now display checkout summary
+  const summaryDiv = document.getElementById('order-summary');
+  const subtotalEl = document.getElementById('subtotal');
+  const totalEl = document.getElementById('total');
+
+  if (products.length === 0) {
+    summaryDiv.innerHTML = `<p style="text-align:center;">Your cart is empty.</p>`;
+  } else {
+    let subtotal = 0;
+    summaryDiv.innerHTML = products.map(item => {
+      const price = parseFloat(item.price) || parseFloat((item.totalPrice || "").replace(/[₹,]/g, "")) || 0;
+      const qty = item.quantity || 1;
+      const itemTotal = price * qty;
+      subtotal += itemTotal;
+
+      return `
+        <div class="cart-item">
+          <img src="${item.img || item.imageSrc}" alt="${item.name || item.productNameLine}">
+          <div class="item-info">
+            <p><strong>${item.name || item.productNameLine}</strong></p>
+            <p>Price: ₹${price.toFixed(2)}</p>
+            <p>Qty: ${qty}</p>
+          </div>
+          <div><strong>₹${itemTotal.toFixed(2)}</strong></div>
+        </div>
+      `;
+    }).join('');
+
+    subtotalEl.textContent = `₹${subtotal.toFixed(2)}`;
+    totalEl.textContent = `₹${(subtotal + 10).toFixed(2)}`;
+    localStorage.setItem("checkoutTotal", (subtotal + 10).toFixed(2));
+  }
+
+  // Payment button
+  document.getElementById("payConfirmBtn").addEventListener("click", () => {
+    const paymentOption = document.querySelector('input[name="payment"]:checked')?.value;
+    if (paymentOption === "card") {
+      window.location.href = "card-payment.html";
+    } else if (paymentOption === "paypal") {
+      alert("Redirecting to PayPal payment gateway...");
+    } else {
+      alert("Please select a payment option.");
+    }
+  });
+</script>
+<!-- Leaflet Map (for location picker) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// --------------------
+// USER AUTH + PROFILE
+// --------------------
+function getUsers() {
+  return JSON.parse(localStorage.getItem("gh_users") || "{}");
+}
+
+function saveUsers(users) {
+  localStorage.setItem("gh_users", JSON.stringify(users));
+}
+
+function getCurrentUser() {
+  const email = localStorage.getItem("gh_current_user");
+  if (!email) return null;
+  const users = getUsers();
+  return users[email] || null;
+}
+
+function setCurrentUser(email) {
+  if (email) localStorage.setItem("gh_current_user", email);
+  else localStorage.removeItem("gh_current_user");
+}
+
+// --------------------
+// SIGN UP
+// --------------------
+function handleSignup() {
+  const name = document.getElementById("signupName").value.trim();
+  const email = document.getElementById("signupEmail").value.trim().toLowerCase();
+  const phone = document.getElementById("signupPhone").value.trim();
+  const password = document.getElementById("signupPassword").value.trim();
+
+  if (!name || !email || !password) {
+    alert("Please fill all required fields (Name, Email, Password).");
+    return;
+  }
+
+  const users = getUsers();
+  if (users[email]) {
+    alert("User already exists. Please login instead.");
+    closeModal('signupModal');
+    openModal('loginModal');
+    return;
+  }
+
+  users[email] = { name, email, phone, password, location: "Set your location" };
+  saveUsers(users);
+  setCurrentUser(email);
+
+  alert(`Welcome, ${name}! 🎉`);
+  closeModal('signupModal');
+  updateNavbar();
+}
+
+// --------------------
+// LOGIN
+// --------------------
+function handleLogin() {
+  const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+  const password = document.getElementById("loginPassword").value.trim();
+
+  const users = getUsers();
+  const user = users[email];
+
+  if (!user || user.password !== password) {
+    alert("Invalid email or password.");
+    return;
+  }
+
+  setCurrentUser(email);
+  alert(`Welcome back, ${user.name}! 🌿`);
+  closeModal('loginModal');
+  updateNavbar();
+}
+
+// --------------------
+// LOGOUT
+// --------------------
+function handleLogout() {
+  setCurrentUser(null);
+  updateNavbar();
+  alert("You have been logged out.");
+}
+
+// --------------------
+// NAVBAR UPDATE
+// --------------------
+function updateNavbar() {
+  const user = getCurrentUser();
+  const accountBtn = document.querySelector('[onclick*="accountModal"]');
+  const loginBtn = document.querySelector('.login-icon .text');
+  const welcomeMsg = document.getElementById('welcome-msg');
+  const locSpan = document.getElementById('current-location-text');
+
+  if (user) {
+    loginBtn.textContent = "Logout";
+    loginBtn.parentElement.onclick = handleLogout;
+    if (welcomeMsg) welcomeMsg.textContent = `Welcome, ${user.name}`;
+    if (locSpan) locSpan.textContent = user.location || "Set your location";
+  } else {
+    loginBtn.textContent = "Login / Signup";
+    loginBtn.parentElement.onclick = () => openModal('loginModal');
+    if (welcomeMsg) welcomeMsg.textContent = "";
+    if (locSpan) locSpan.textContent = "Set your location";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", updateNavbar);
+
+// --------------------
+// ACCOUNT MODAL FILL
+// --------------------
+function openAccountModal() {
+  const user = getCurrentUser();
+  openModal('accountModal');
+
+  const modal = document.querySelector('#accountModal .modal');
+  if (!user) {
+    modal.innerHTML = `
+      <span class="close-btn" onclick="closeModal('accountModal')">&times;</span>
+      <h2>Not logged in</h2>
+      <button onclick="openModal('loginModal'); closeModal('accountModal')">Login</button>`;
+    return;
+  }
+
+  modal.innerHTML = `
+    <span class="close-btn" onclick="closeModal('accountModal')">&times;</span>
+    <h2>Welcome, ${user.name}</h2>
+    <p><strong>Email:</strong> ${user.email}</p>
+    <p><strong>Phone:</strong> ${user.phone || '-'}</p>
+    <p><strong>Location:</strong> ${user.location || 'Not set'}</p>
+    <hr>
+    <ul>
+      <li><a href="account.html">Your Account</a></li>
+      <li><a href="orders.html">Your Orders</a></li>
+      <li><a href="wishlist.html">Your Wishlist</a></li>
+      <li><a href="saveitems.html">Subscribe & Save</a></li>
+    </ul>
+    <button onclick="handleLogout()">Logout</button>`;
+}
+
+// --------------------
+// LOCATION PICKER MAP
+// --------------------
+function openLocationMap() {
+  openModal('locationModal');
+
+  // Replace modal content with map
+  const modal = document.querySelector('#locationModal .modal');
+  modal.innerHTML = `
+    <span class="close-btn" onclick="closeModal('locationModal')">&times;</span>
+    <h2>Select Your Delivery Location</h2>
+    <div id="map" style="height:350px;border-radius:10px;"></div>
+    <p id="pickedAddress" style="margin-top:10px;font-weight:600;color:#4a7d20;"></p>
+    <button style="margin-top:10px;" onclick="closeModal('locationModal')">Done</button>
+  `;
+
+  const map = L.map('map').setView([13.0827, 80.2707], 12); // Default: Chennai
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+
+  let marker;
+  map.on('click', async (e) => {
+    const { lat, lng } = e.latlng;
+    if (marker) marker.remove();
+    marker = L.marker([lat, lng]).addTo(map);
+
+    // Reverse geocode
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+    const data = await response.json();
+    const address = data.display_name || `Lat: ${lat.toFixed(4)}, Lon: ${lng.toFixed(4)}`;
+
+    document.getElementById('pickedAddress').textContent = address;
+
+    // Save location
+    const user = getCurrentUser();
+    if (user) {
+      const users = getUsers();
+      users[user.email].location = address;
+      saveUsers(users);
+      updateNavbar();
+    }
+  });
+}
+</script>
+<!-- Leaflet (Online Map for Location) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// ---------- Modal Utilities ----------
+function openModal(id){ document.getElementById(id).style.display="flex"; }
+function closeModal(id){ document.getElementById(id).style.display="none"; }
+function toggleModals(from,to){ closeModal(from); openModal(to); }
+
+// ---------- Storage Helpers ----------
+function getUsers(){ return JSON.parse(localStorage.getItem("gh_users")||"{}"); }
+function saveUsers(u){ localStorage.setItem("gh_users",JSON.stringify(u)); }
+function getCurrentUserEmail(){ return localStorage.getItem("gh_current_user"); }
+function setCurrentUserEmail(e){ e?localStorage.setItem("gh_current_user",e):localStorage.removeItem("gh_current_user"); }
+function getCurrentUser(){ const e=getCurrentUserEmail(); return e?getUsers()[e]||null:null; }
+
+// ---------- Navbar Update ----------
+function updateNavbar(){
+  const user=getCurrentUser();
+  const welcome=document.getElementById("welcome-msg");
+  const loc=document.getElementById("current-location-text");
+  const loginBtn=document.querySelector(".login-icon .text");
+  if(user){
+    if(welcome)welcome.textContent=`Welcome, ${user.name} 🌿`;
+    if(loc)loc.textContent=user.location||"Set your location";
+    if(loginBtn)loginBtn.textContent="Logout";
+    document.querySelector(".login-icon").onclick=handleLogout;
+  }else{
+    if(welcome)welcome.textContent="";
+    if(loc)loc.textContent="Set your location";
+    if(loginBtn)loginBtn.textContent="Login / Signup";
+    document.querySelector(".login-icon").onclick=()=>openModal('loginModal');
+  }
+}
+
+// ---------- Signup ----------
+function handleSignup(){
+  const name=signupName.value.trim();
+  const email=signupEmail.value.trim().toLowerCase();
+  const phone=signupPhone.value.trim();
+  const password=signupPassword.value.trim();
+  if(!name||!email||!password){alert("Please fill all required fields.");return;}
+  const users=getUsers();
+  if(users[email]){alert("User already exists. Please login.");toggleModals('signupModal','loginModal');return;}
+  users[email]={name,email,phone,password,location:"Set your location"};
+  saveUsers(users);
+  setCurrentUserEmail(email);
+  closeModal('signupModal');
+  alert(`Welcome, ${name}! 🎉`);
+  updateNavbar();
+}
+
+// ---------- Login ----------
+function handleLogin(){
+  const email=loginEmail.value.trim().toLowerCase();
+  const pass=loginPassword.value.trim();
+  const users=getUsers(); const user=users[email];
+  if(!user||user.password!==pass){alert("Invalid email or password.");return;}
+  setCurrentUserEmail(email);
+  closeModal('loginModal');
+  alert(`Welcome back, ${user.name}!`);
+  updateNavbar();
+  updateAccountModal();
+}
+
+// ---------- Logout ----------
+function handleLogout(){
+  setCurrentUserEmail(null);
+  updateNavbar();
+  updateAccountModal();
+  alert("You have been logged out.");
+}
+
+// ---------- Account Modal ----------
+function updateAccountModal(){
+  const user=getCurrentUser();
+  const container=document.getElementById("accountContent");
+  if(!user){
+    container.innerHTML=`
+      <h2>Your Account</h2>
+      <p>You are not logged in.</p>
+      <button class='continue-btn' onclick='openModal("loginModal")'>Login</button>`;
+    return;
+  }
+  container.innerHTML=`
+    <h2>Welcome, ${user.name}</h2>
+    <p><strong>Email:</strong> ${user.email}</p>
+    <p><strong>Phone:</strong> ${user.phone||'-'}</p>
+    <p><strong>Location:</strong> ${user.location||'Not set'}</p>
+    <hr>
+    <ul>
+      <li><a href='account.html'>Your Account</a></li>
+      <li><a href='orders.html'>Your Orders</a></li>
+      <li><a href='wishlist.html'>Your Wishlist</a></li>
+      <li><a href='saveitems.html'>Subscribe & Save</a></li>
+    </ul>
+    <button class='continue-btn' onclick='openLocationMap()'>Change Location</button>
+    <button class='continue-btn' onclick='handleLogout()'>Logout</button>`;
+}
+
+// ---------- Location Picker (Leaflet) ----------
+function openLocationMap(){
+  openModal('locationModal');
+  const mapDiv=document.getElementById('map');
+  mapDiv.innerHTML="";
+  const map=L.map('map').setView([13.0827,80.2707],12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    maxZoom:19, attribution:'&copy; OpenStreetMap'
+  }).addTo(map);
+  let marker;
+  map.on('click',async e=>{
+    const{lat,lng}=e.latlng;
+    if(marker)marker.remove();
+    marker=L.marker([lat,lng]).addTo(map);
+    const res=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+    const data=await res.json();
+    const address=data.display_name||`Lat:${lat.toFixed(4)},Lon:${lng.toFixed(4)}`;
+    document.getElementById('pickedAddress').textContent=address;
+    const user=getCurrentUser(); if(user){
+      const users=getUsers(); users[user.email].location=address; saveUsers(users);
+      updateNavbar(); updateAccountModal();
+    }
+  });
+}
+
+// ---------- Init ----------
+document.addEventListener("DOMContentLoaded",()=>{ updateNavbar(); updateAccountModal(); });
+</script>
+
+</body>
+</html>

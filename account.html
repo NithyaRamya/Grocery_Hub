@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Account • GroceryHub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      background-color: #f5fbe6;
+      color: #333;
+    }
+
+    header,
+    .top-bar {
+      background: white;
+    }
+
+    .account-container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #4a7d20;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .user-info p {
+      margin: 8px 0;
+      font-size: 16px;
+    }
+
+    .btn {
+      background-color: #8bc34a;
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn:hover {
+      background-color: #7aa436;
+    }
+
+    .section {
+      margin-top: 30px;
+    }
+
+    .form-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .form-container input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      width: 100%;
+      font-size: 15px;
+    }
+
+    .form-container label {
+      font-weight: 600;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .location-box {
+      background: #f0fad9;
+      border-radius: 10px;
+      padding: 10px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <div class="top-bar">
+    <div class="left">
+      <span><img src="images/Vector V.png"> +91 87642 987687</span>
+      <span><img src="images/Vector 1.png"> +91 87642 987687</span>
+    </div>
+    <div id="welcome-msg"></div>
+    <div class="right">
+      <div class="dropdown" onclick="openLocationMap()">
+        <span>📍 <span id="current-location-text">Set your location</span></span>
+      </div>
+      <div class="dropdown" onclick="openAccountModal()">
+        <span>Account <img src="images/Vector.png"></span>
+      </div>
+      <div class="dropdown login-icon" onclick="openModal('loginModal')">
+        <span class="icon"><img src="images/SVG.png"></span>
+        <span class="text">Login / Signup</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account Section -->
+  <div class="account-container">
+    <h1>👤 Your Account</h1>
+    <div id="accountContent"></div>
+  </div>
+
+  <!-- Location Modal -->
+  <div class="modal-overlay" id="locationModal" style="display:none;">
+    <div class="modal" style="max-width:700px;">
+      <span class="close-btn" onclick="closeModal('locationModal')">&times;</span>
+      <h2>Select Your Location</h2>
+      <div id="map" style="height:350px;border-radius:10px;"></div>
+      <p id="pickedAddress" style="margin-top:10px;font-weight:600;color:#4a7d20;"></p>
+      <button class="btn" style="margin-top:10px;" onclick="closeModal('locationModal')">Done</button>
+    </div>
+  </div>
+
+  <!-- Signup Modal -->
+  <div class="modal-overlay" id="signupModal" style="display:none;">
+    <div class="modal login-modal">
+      <span class="close-btn" onclick="closeModal('signupModal')">&times;</span>
+      <h2 class="login-title">Create Account</h2>
+      <p class="login-subtitle">Sign up to start shopping with GroceryHub</p>
+
+      <div class="form-container">
+        <label>Full Name</label>
+        <input type="text" id="signupName" placeholder="Full Name">
+
+        <label>Email Address</label>
+        <input type="email" id="signupEmail" placeholder="Email Address">
+
+        <label>Phone Number</label>
+        <input type="text" id="signupPhone" placeholder="Phone Number" maxlength="10">
+
+        <label>Password</label>
+        <input type="password" id="signupPassword" placeholder="Password">
+
+        <button class="btn" onclick="handleSignup()">Sign Up</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- Utility ----------
+    function openModal(id) {
+      document.getElementById(id).style.display = "flex";
+    }
+    function closeModal(id) {
+      document.getElementById(id).style.display = "none";
+    }
+
+    // ---------- User Data ----------
+    function getUsers() {
+      return JSON.parse(localStorage.getItem("gh_users") || "{}");
+    }
+    function saveUsers(users) {
+      localStorage.setItem("gh_users", JSON.stringify(users));
+    }
+    function getCurrentUser() {
+      const email = localStorage.getItem("gh_current_user");
+      if (!email) return null;
+      return getUsers()[email] || null;
+    }
+    function setCurrentUser(email) {
+      if (email) localStorage.setItem("gh_current_user", email);
+      else localStorage.removeItem("gh_current_user");
+    }
+
+    // ---------- Signup ----------
+    function handleSignup() {
+      const name = document.getElementById("signupName").value.trim();
+      const email = document.getElementById("signupEmail").value.trim().toLowerCase();
+      const phone = document.getElementById("signupPhone").value.trim();
+      const password = document.getElementById("signupPassword").value.trim();
+
+      if (!name || !email || !password) {
+        alert("Please fill all required fields.");
+        return;
+      }
+
+      const users = getUsers();
+      if (users[email]) {
+        alert("User already exists. Please log in instead.");
+        closeModal('signupModal');
+        return;
+      }
+
+      users[email] = { name, email, phone, password, location: "Set your location" };
+      saveUsers(users);
+      setCurrentUser(email);
+      alert(`Welcome, ${name}! 🎉`);
+      closeModal('signupModal');
+      renderAccount();
+    }
+
+    // ---------- Account ----------
+    function renderAccount() {
+      const user = getCurrentUser();
+      const container = document.getElementById("accountContent");
+      const welcomeMsg = document.getElementById("welcome-msg");
+      const locText = document.getElementById("current-location-text");
+
+      if (!user) {
+        container.innerHTML = `
+          <p>You are not logged in.</p>
+          <button class="btn" onclick="openModal('signupModal')">Sign Up</button>`;
+        if (welcomeMsg) welcomeMsg.textContent = "";
+        if (locText) locText.textContent = "Set your location";
+        return;
+      }
+
+      welcomeMsg.textContent = `Welcome, ${user.name}`;
+      locText.textContent = user.location || "Set your location";
+
+      container.innerHTML = `
+        <div class="user-info">
+          <p><strong>Name:</strong> ${user.name}</p>
+          <p><strong>Email:</strong> ${user.email}</p>
+          <p><strong>Phone:</strong> ${user.phone || '-'}</p>
+          <p><strong>Location:</strong> ${user.location || 'Not set'}</p>
+        </div>
+        <button class="btn" onclick="openLocationMap()">Change Location</button>
+        <button class="btn" onclick="logout()">Logout</button>`;
+    }
+
+    function logout() {
+      setCurrentUser(null);
+      renderAccount();
+    }
+
+    // ---------- Location Picker ----------
+    function openLocationMap() {
+      openModal('locationModal');
+
+      const mapDiv = document.getElementById("map");
+      mapDiv.innerHTML = ""; // clear previous
+      const map = L.map('map').setView([13.0827, 80.2707], 12); // Chennai default
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap'
+      }).addTo(map);
+
+      let marker;
+      map.on('click', async (e) => {
+        const { lat, lng } = e.latlng;
+        if (marker) marker.remove();
+        marker = L.marker([lat, lng]).addTo(map);
+
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+        const data = await response.json();
+        const address = data.display_name || `Lat: ${lat.toFixed(4)}, Lon: ${lng.toFixed(4)}`;
+
+        document.getElementById("pickedAddress").textContent = address;
+
+        const user = getCurrentUser();
+        if (user) {
+          const users = getUsers();
+          users[user.email].location = address;
+          saveUsers(users);
+          renderAccount();
+        }
+      });
+    }
+
+    // ---------- Init ----------
+    document.addEventListener("DOMContentLoaded", renderAccount);
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Success • GroceryHub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="style.css">
+
+ <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      background-color: #fff;
+      color: #222;
+    }
+
+    .top-bar {
+      background-color: #8BC34A;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      padding: 2px 20px;
+      font-size: 13px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .top-bar .left,
+    .top-bar .right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      background-color: white;
+      /* border-bottom: 1px solid #eee;*/
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #222;
+      font-size: 16px;
+      padding-bottom: 3px;
+    }
+
+    nav a.active {
+      border-bottom: 2px solid #8BC34A;
+    }
+
+    .icons {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      font-size: 13px;
+      color: #444;
+    }
+
+    .icons i {
+      font-size: 18px;
+      display: block;
+      text-align: center;
+    }
+
+    .icons div {
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+
+      header,
+      .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      nav,
+      .icons {
+        margin-top: 10px;
+        gap: 15px;
+      }
+    }
+
+    .login-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+    }
+
+    .login-icon .icon {
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .login-icon .text {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .modal {
+      background-color: #e6f4d8;
+      padding: 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+    }
+
+    .modal h2 {
+      margin-top: 0;
+    }
+
+    .modal .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .modal button {
+      background-color: #8BC34A;
+      border: none;
+      padding: 10px 25px;
+      font-size: 16px;
+      color: white;
+      border-radius: 10px;
+      margin: 15px 0;
+      cursor: pointer;
+    }
+
+    .modal input[type="text"] {
+      padding: 10px;
+      width: calc(100% - 100px);
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-right: 10px;
+    }
+
+    .modal .input-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .phone-input {
+      background: #8BC34A;
+      color: #222;
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    .phone-input input {
+      border: none;
+      outline: none;
+      background: transparent;
+      color: #222;
+      margin-left: 10px;
+      width: 100%;
+    }
+
+    .login-modal {
+      background-color: #DFF3C9;
+      text-align: center;
+      padding: 40px 30px;
+    }
+
+    .login-img {
+      width: 100%;
+      max-width: 280px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    .login-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 10px 0 5px;
+      color: #000;
+    }
+
+    .login-subtitle {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .phone-input.full-width {
+      background: #8BC34A;
+      color: #fff;
+      padding: 14px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 auto 25px;
+      max-width: 100%;
+    }
+
+    .phone-input.full-width input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: white;
+      font-size: 16px;
+      width: 100%;
+    }
+
+    .login-btn {
+      background: white;
+      color: #8BC34A;
+      font-weight: 600;
+      border-radius: 30px;
+      padding: 14px 0;
+      font-size: 18px;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .terms-text {
+      font-size: 11px;
+      color: #333;
+      margin-top: 15px;
+    }
+
+    .continue-btn {
+      width: 100%;
+      background: white;
+      color: #8BC34A;
+      font-weight: bold;
+      font-size: 20px;
+      padding: 14px 0;
+      border-radius: 30px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .continue-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .otp-input {
+      width: 300px;
+      /* Make inputs full width of their container */
+      box-sizing: border-box;
+      /* Includes padding and border in width */
+      padding: 12px 15px;
+      /* Consistent padding */
+      margin-bottom: 15px;
+      /* Space between inputs */
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    .fish-card,
+    .dairy-card,
+    .buy-card,
+    .explore-card {
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .fish-card:hover,
+    .dairy-card:hover,
+    .buy-card:hover,
+    .explore-card:hover {
+      transform: scale(1.02);
+    }
+
+    a {
+      text-decoration: none;
+    }
+    
+.success-container {
+      max-width: 900px;
+      margin: 60px auto;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 30px;
+      text-align: center;
+    }
+
+    .success-container h2 {
+      color: #4a7d20;
+      margin-bottom: 10px;
+    }
+
+    .order-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #eee;
+      padding: 10px 0;
+    }
+
+    .order-item img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-right: 15px;
+    }
+
+    .track-btn {
+      background: #8BC34A;
+      color: white;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 25px;
+    }
+
+    footer {
+      background: #4a7d20;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+      margin-top: auto;
+    }
+
+    .timeline {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin-top: 40px;
+    }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .step.active {
+      color: #4a7d20;
+      font-weight: 600;
+    }
+
+    .step-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #ccc;
+      margin-bottom: 5px;
+    }
+
+    .step.active .step-circle {
+      background: #4a7d20;
+    }
+
+    .line {
+      width: 50px;
+      height: 2px;
+      background: #ccc;
+    }
+
+    .line.active {
+      background: #4a7d20;
+    }
+  </style>
+</head>
+<body>
+
+
+
+
+<body>
+ <div class="top-bar">
+  <div class="left">
+    <span><img src="images/Vector V.png"> +91 87642 987687</span>
+    <span><img src="images/Vector 1.png"> +91 87642 987687</span>
+  </div>
+  <div id="welcome-msg"></div>
+  <div class="right">
+    <div class="dropdown" onclick="openLocationMap()">
+      <span>📍 <span id="current-location-text">Set your location</span></span>
+    </div>
+    <div class="dropdown" onclick="openAccountModal()">
+      <span>Account <img src="images/Vector.png"></span>
+    </div>
+    <div class="dropdown login-icon" onclick="openModal('loginModal')">
+      <span class="icon"><img src="images/SVG.png"></span>
+      <span class="text">Login / Signup</span>
+    </div>
+  </div>
+</div>
+
+
+  <header>
+    <div class="logo">
+      <img src="images/Ellipse 1.png" alt="logo" />
+      <strong style="color: #7CB342;">GroceryHub</strong>
+    </div>
+    <nav>
+      <a href="#" class="active">Home</a>
+      <a href="categories.html">Categories</a>
+      <a href="deals.html">Deals</a>
+    </nav>
+    <div class="icons">
+       <!-- Simple search toggle -->
+    <div onclick="toggleSearch()" style="cursor:pointer">
+      <img src="images/SEARCH.png"><br>
+      <span style="color:#8BC34A">Search</span>
+    </div>
+
+      <!-- <div>
+        <img src="images/Vector 8.png" class="cart-icon" id="cart-icon"><br>
+        <span class="cart-badge" id="cart-count">0</span>
+        <span style="color:#8BC34A">Cart</span>
+      </div> -->
+
+      <div class="cart-container">
+        <img src="images/Vector 8.png" class="cart-icon" id="cart-icon"><br>
+        <span class="cart-badge" id="cart-count">0</span>
+        <span style="color:#8BC34A">Cart</span>
+      </div>
+      <div>
+        <img src="images/Vector O.png"><br>
+        <span style="color:#8BC34A">Liked</span>
+      </div>
+    </div>
+  </header>
+  <!-- inline search bar -->
+<div id="search-bar" style="display:none; padding:10px 20px;background:#f6ffe9;">
+  <input id="search-input" placeholder="Search products..." style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #ddd">
+</div>
+  <!-- ✅ Order Success -->
+  <div class="success-container">
+    <h2>✅ Order Placed Successfully!</h2>
+    <p>Thank you for shopping with <strong>GroceryHub</strong> 💚</p>
+    <div id="order-summary" style="margin-top:30px; text-align:left;"></div>
+
+    <h3 style="margin-top:40px; color:#4a7d20;">📦 Track Your Package</h3>
+    <div class="timeline" id="order-timeline">
+      <div class="step active"><div class="step-circle"></div><div>Ordered<br><small>Today</small></div></div>
+      <div class="line active"></div>
+      <div class="step active"><div class="step-circle"></div><div>Shipped<br><small>+2 days</small></div></div>
+      <div class="line"></div>
+      <div class="step"><div class="step-circle"></div><div>Out for Delivery<br><small>+4 days</small></div></div>
+      <div class="line"></div>
+      <div class="step"><div class="step-circle"></div><div>Delivered<br><small>+5 days</small></div></div>
+    </div>
+
+    <button class="track-btn" onclick="window.location.href='index.html'">Continue Shopping</button>
+  </div>
+
+  <!-- ✅ Footer -->
+  <footer>GroceryHub India © All rights Reserved</footer>
+
+  <!-- ✅ Modals (Login / Signup / Account / Location) -->
+  <div class="modal-overlay" id="locationModal">
+    <div class="modal">
+      <span class="close-btn" onclick="closeModal('locationModal')">&times;</span>
+      <h2>Select Your Location</h2>
+      <div id="map" style="height:350px;border-radius:10px;"></div>
+      <p id="pickedAddress"></p>
+      <button class="continue-btn" onclick="closeModal('locationModal')">Done</button>
+    </div>
+  </div>
+<div class="modal-overlay" id="accountModal">
+  <div class="modal">
+    <span class="close-btn" onclick="closeModal('accountModal')">&times;</span>
+    <div id="accountContent">
+      <h2>Your Account</h2>
+      <p>You are not logged in.</p>
+      <button class="continue-btn" onclick="openModal('loginModal')">Login</button>
+    </div>
+  </div>
+</div>
+  <div class="modal-overlay" id="signupModal">
+    <div class="modal">
+      <span class="close-btn" onclick="closeModal('signupModal')">&times;</span>
+      <h2>Create Account</h2>
+      <input id="signupName" placeholder="Full Name" class="otp-input">
+      <input id="signupEmail" type="email" placeholder="Email" class="otp-input">
+      <input id="signupPhone" placeholder="Phone" maxlength="10" class="otp-input">
+      <input id="signupPassword" type="password" placeholder="Password" class="otp-input">
+      <button class="continue-btn" onclick="handleSignup()">Sign Up</button>
+      <p style="text-align:center;">Already have an account? <a href="#" onclick="toggleModals('signupModal','loginModal');return false;">Login</a></p>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="loginModal">
+    <div class="modal">
+      <span class="close-btn" onclick="closeModal('loginModal')">&times;</span>
+      <h2>Login</h2>
+      <input id="loginEmail" type="email" placeholder="Email" class="otp-input">
+      <input id="loginPassword" type="password" placeholder="Password" class="otp-input">
+      <button class="continue-btn" onclick="handleLogin()">Login</button>
+      <p style="text-align:center;">New user? <a href="#" onclick="toggleModals('loginModal','signupModal');return false;">Sign Up</a></p>
+    </div>
+  </div>
+
+  <!-- ✅ JS (Final, Unified) -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* =========================================================
+   🔹 UNIVERSAL MODAL UTILITIES
+   ========================================================= */
+function openModal(id) {
+  document.getElementById(id).style.display = "flex";
+}
+function closeModal(id) {
+  document.getElementById(id).style.display = "none";
+}
+function toggleModals(from, to) {
+  closeModal(from);
+  openModal(to);
+}
+
+/* =========================================================
+   🔹 USER ACCOUNT MANAGEMENT (LocalStorage)
+   ========================================================= */
+function getUsers() {
+  return JSON.parse(localStorage.getItem("gh_users") || "{}");
+}
+function saveUsers(users) {
+  localStorage.setItem("gh_users", JSON.stringify(users));
+}
+function getUserEmail() {
+  return localStorage.getItem("gh_current_user");
+}
+function setUserEmail(email) {
+  if (email) localStorage.setItem("gh_current_user", email);
+  else localStorage.removeItem("gh_current_user");
+}
+function getUser() {
+  const email = getUserEmail();
+  const users = getUsers();
+  return email && users[email] ? users[email] : null;
+}
+
+/* =========================================================
+   🔹 AUTH FUNCTIONS (Signup / Login / Logout)
+   ========================================================= */
+function handleSignup() {
+  const name = signupName.value.trim(),
+    email = signupEmail.value.trim().toLowerCase(),
+    phone = signupPhone.value.trim(),
+    password = signupPassword.value.trim();
+
+  if (!name || !email || !password) return alert("Please fill all required fields.");
+
+  const users = getUsers();
+  if (users[email]) return alert("User already exists.");
+  users[email] = { name, email, phone, password, location: "Set your location" };
+
+  saveUsers(users);
+  setUserEmail(email);
+  closeModal("signupModal");
+  updateNavbar();
+  alert(`Welcome, ${name}!`);
+}
+
+function handleLogin() {
+  const email = loginEmail.value.trim().toLowerCase(),
+    pass = loginPassword.value.trim(),
+    users = getUsers(),
+    u = users[email];
+
+  if (!u || u.password !== pass) return alert("Invalid credentials.");
+
+  setUserEmail(email);
+  closeModal("loginModal");
+  updateNavbar();
+  alert(`Welcome back, ${u.name}!`);
+}
+
+function handleLogout() {
+  setUserEmail(null);
+  updateNavbar();
+  alert("Logged out.");
+  closeModal("accountModal");
+}
+
+/* =========================================================
+   🔹 NAVBAR UPDATER
+   ========================================================= */
+function updateNavbar() {
+  const u = getUser(),
+    welcome = document.getElementById("welcome-msg"),
+    loc = document.getElementById("current-location-text"),
+    btn = document.querySelector(".login-icon .text");
+
+  if (u) {
+    if (welcome) welcome.textContent = `Welcome, ${u.name}`;
+    if (loc) loc.textContent = u.location || "Set your location";
+    if (btn) {
+      btn.textContent = "Logout";
+      document.querySelector(".login-icon").onclick = handleLogout;
+    }
+  } else {
+    if (welcome) welcome.textContent = "";
+    if (loc) loc.textContent = "Set your location";
+    if (btn) {
+      btn.textContent = "Login / Signup";
+      document.querySelector(".login-icon").onclick = () => openModal("loginModal");
+    }
+  }
+}
+
+/* =========================================================
+   🔹 ACCOUNT MODAL HANDLER
+   ========================================================= */
+function openAccountModal() {
+  const user = getUser();
+  openModal("accountModal");
+  const modal = document.querySelector("#accountModal .modal");
+
+  if (!user) {
+    // Not logged in
+    modal.innerHTML = `
+      <span class="close-btn" onclick="closeModal('accountModal')">&times;</span>
+      <h2>Not logged in</h2>
+      <p>Please log in to view your account details.</p>
+      <button onclick="toggleModals('accountModal','loginModal')" class="continue-btn">Login</button>
+    `;
+    return;
+  }
+
+  // Logged in view
+  modal.innerHTML = `
+    <span class="close-btn" onclick="closeModal('accountModal')">&times;</span>
+    <h2>Welcome, ${user.name}</h2>
+    <p><strong>Email:</strong> ${user.email}</p>
+    <p><strong>Phone:</strong> ${user.phone || "-"}</p>
+    <p><strong>Location:</strong> ${user.location || "Not set"}</p>
+    <hr>
+    <ul>
+      <li><a href="account.html">Your Account</a></li>
+      <li><a href="orders.html">Your Orders</a></li>
+      <li><a href="wishlist.html">Your Wishlist</a></li>
+    </ul>
+    <button onclick="handleLogout()" class="continue-btn">Logout</button>
+  `;
+}
+
+/* =========================================================
+   🔹 LEAFLET MAP LOCATION PICKER
+   ========================================================= */
+function openLocationMap() {
+  openModal("locationModal");
+  const map = L.map("map").setView([13.0827, 80.2707], 12);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+
+  let marker;
+  map.on("click", async (e) => {
+    const { lat, lng } = e.latlng;
+    if (marker) marker.remove();
+    marker = L.marker([lat, lng]).addTo(map);
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+    const data = await res.json();
+    const addr = data.display_name || `Lat:${lat}, Lon:${lng}`;
+    document.getElementById("pickedAddress").textContent = addr;
+
+    const u = getUser();
+    if (u) {
+      const users = getUsers();
+      users[u.email].location = addr;
+      saveUsers(users);
+      updateNavbar();
+    }
+  });
+}
+
+/* =========================================================
+   🔹 SEARCH BAR TOGGLE
+   ========================================================= */
+function toggleSearch() {
+  const el = document.getElementById("search-bar");
+  el.style.display = el.style.display === "none" ? "block" : "none";
+  if (el.style.display === "block") document.getElementById("search-input").focus();
+}
+
+document.getElementById("search-input")?.addEventListener("input", (e) => {
+  const q = e.target.value.toLowerCase().trim();
+  const cards = document.querySelectorAll(".fish-card,.dairy-card,.buy-card,.explore-card");
+  cards.forEach((c) => {
+    const name = (c.querySelector(".product-name")?.textContent || "").toLowerCase();
+    c.style.display = name.includes(q) ? "" : "none";
+  });
+});
+
+/* =========================================================
+   🔹 ORDER SUMMARY + RESET CART
+   ========================================================= */
+document.addEventListener("DOMContentLoaded", () => {
+  updateNavbar();
+
+  const order = JSON.parse(localStorage.getItem("orderSummary") || "[]");
+  const c = document.getElementById("order-summary");
+  if (!order.length) {
+    c.innerHTML = "<p>No recent order found.</p>";
+    return;
+  }
+
+  let subtotal = 0;
+  const handlingFee = 10;
+  c.innerHTML =
+    "<h3>Your Ordered Items</h3>" +
+    order
+      .map((i) => {
+        const p = parseFloat(i.price || 0);
+        const qty = i.quantity || 1;
+        const t = p * qty;
+        subtotal += t;
+        return `
+          <div class='order-item'>
+            <div style='display:flex;align-items:center;'>
+              <img src='${i.img}' alt='${i.name}' />
+              <div>
+                <p><strong>${i.name}</strong></p>
+                <p>Qty: ${qty}</p>
+              </div>
+            </div>
+            <p>₹${t.toFixed(2)}</p>
+          </div>`;
+      })
+      .join("");
+
+  const grandTotal = subtotal + handlingFee;
+  c.innerHTML += `
+    <div style="margin-top:15px;">
+      <p style="font-weight:500;">Subtotal: ₹${subtotal.toFixed(2)}</p>
+      <p style="font-weight:500;">Handling Fee: ₹${handlingFee.toFixed(2)}</p>
+      <h3>Total Paid: ₹${grandTotal.toFixed(2)}</h3>
+    </div>
+  `;
+
+  localStorage.removeItem("cart");
+  document.getElementById("cart-count").textContent = "0";
+});
+</script>
+
+ 
+  <script>
+  /* ===================== ACCOUNT MODAL LOGIC (same as index.html) ===================== */
+
+  // Open any modal by ID
+  function openModal(id) {
+    document.getElementById(id).style.display = 'flex';
+  }
+
+  // Close any modal by ID
+  function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+  }
+
+  // Toggle between two modals
+  function toggleModals(from, to) {
+    closeModal(from);
+    openModal(to);
+  }
+
+  // Retrieve all saved users
+  function getUsers() {
+    return JSON.parse(localStorage.getItem('gh_users') || '{}');
+  }
+
+  // Save updated users
+  function saveUsers(users) {
+    localStorage.setItem('gh_users', JSON.stringify(users));
+  }
+
+  // Get current user email from localStorage
+  function getUserEmail() {
+    return localStorage.getItem('gh_current_user');
+  }
+
+  // Set or clear current user
+  function setUserEmail(email) {
+    if (email) localStorage.setItem('gh_current_user', email);
+    else localStorage.removeItem('gh_current_user');
+  }
+
+  // Get full user object
+  function getUser() {
+    const email = getUserEmail();
+    const users = getUsers();
+    return email && users[email] ? users[email] : null;
+  }
+
+  // Logout handler
+  function handleLogout() {
+    setUserEmail(null);
+    alert('You have been logged out.');
+    updateNavbar();
+    closeModal('accountModal');
+  }
+
+  // 🟢 Account Modal Open Handler (identical to index.html)
+  function openAccountModal() {
+    const user = getUser();
+    openModal('accountModal');
+    const modal = document.querySelector('#accountModal .modal');
+
+    if (!user) {
+      // Not logged in — show login prompt
+      modal.innerHTML = `
+        <span class="close-btn" onclick="closeModal('accountModal')">&times;</span>
+        <h2>Not logged in</h2>
+        <p>Please log in to view your account details.</p>
+        <button onclick="openModal('loginModal'); closeModal('accountModal')" class="continue-btn">Login</button>
+      `;
+      return;
+    }
+
+    // Logged in — show user profile summary
+    modal.innerHTML = `
+      <span class="close-btn" onclick="closeModal('accountModal')">&times;</span>
+      <h2>Welcome, ${user.name}</h2>
+      <p><strong>Email:</strong> ${user.email}</p>
+      <p><strong>Phone:</strong> ${user.phone || '-'}</p>
+      <p><strong>Location:</strong> ${user.location || 'Not set'}</p>
+      <hr>
+      <ul>
+        <li><a href="account.html">Your Account</a></li>
+        <li><a href="orders.html">Your Orders</a></li>
+        <li><a href="wishlist.html">Your Wishlist</a></li>
+      </ul>
+      <button onclick="handleLogout()" class="continue-btn">Logout</button>
+    `;
+  }
+</script>
+</body>
+</html>
