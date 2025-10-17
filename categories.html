@@ -289,20 +289,50 @@
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
     }
 
-    .otp-input {
-      width: 300px;
-      /* Make inputs full width of their container */
-      box-sizing: border-box;
-      /* Includes padding and border in width */
-      padding: 12px 15px;
-      /* Consistent padding */
-      margin-bottom: 15px;
-      /* Space between inputs */
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      font-size: 16px;
-    }
-  </style>
+   .otp-input { width: 100%; display: block; box-sizing: border-box; padding: 12px 15px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 10px; font-size: 16px; background: #fff; outline: none; transition: border-color 0.2s ease; } .otp-input:focus { border-color: #8BC34A; }
+  #signupModal .otp-input,
+#signupModal .continue-btn.login-btn {
+  width: 90%;
+  max-width: 380px;
+  margin: 0 auto 15px;
+  display: block;
+  box-sizing: border-box;
+}
+
+/* Matching style for inputs */
+#signupModal .otp-input {
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  font-size: 16px;
+  background: #fff;
+  transition: border-color 0.2s ease;
+}
+
+#signupModal .otp-input:focus {
+  border-color: #8BC34A;
+}
+
+/* Matching style for button */
+#signupModal .continue-btn.login-btn {
+  background: #8BC34A;
+  color: white;
+  font-size: 17px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 0;
+  box-shadow: none;
+  transition: background 0.3s ease;
+}
+
+#signupModal .continue-btn.login-btn:hover {
+  background: #7CB342;
+}
+
+.otp-input:focus {
+  border-color: #8BC34A;
+}</style>
 </head>
 
 <body>
